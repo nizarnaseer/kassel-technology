@@ -66,6 +66,31 @@ export default function App() {
     return () => window.removeEventListener('popstate', handleRouting);
   }, []);
 
+  // Prevent right-click context menu (on non-inputs) and image dragging to protect content
+  useEffect(() => {
+    const handleContextMenu = (e) => {
+      // Allow right-click on inputs and textareas so users can copy-paste their own typed content
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+        return;
+      }
+      e.preventDefault();
+    };
+
+    const handleDragStart = (e) => {
+      if (e.target.tagName === 'IMG') {
+        e.preventDefault();
+      }
+    };
+
+    document.addEventListener('contextmenu', handleContextMenu);
+    document.addEventListener('dragstart', handleDragStart);
+
+    return () => {
+      document.removeEventListener('contextmenu', handleContextMenu);
+      document.removeEventListener('dragstart', handleDragStart);
+    };
+  }, []);
+
   // Scroll Reveal Observer
   useEffect(() => {
     const observer = new IntersectionObserver(
