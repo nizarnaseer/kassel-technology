@@ -1,7 +1,25 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowRight, Cpu, CheckCircle2, ShieldAlert } from 'lucide-react';
 
 export default function Hero({ setCurrentView }) {
+  const [uptime, setUptime] = useState('');
+
+  useEffect(() => {
+    const startDate = new Date('2021-01-01T00:00:00Z');
+    const updateTimer = () => {
+      const diff = Date.now() - startDate.getTime();
+      const years = Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25));
+      const days = Math.floor((diff % (1000 * 60 * 60 * 24 * 365.25)) / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      setUptime(`${years}y ${days}d ${hours}h ${minutes}m ${seconds}s`);
+    };
+    updateTimer();
+    const interval = setInterval(updateTimer, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
   const handleScrollTo = (id) => {
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: 'smooth' });
@@ -69,6 +87,9 @@ export default function Hero({ setCurrentView }) {
                 </p>
                 <p className="term-line output">
                   <span className="term-label">Platforms:</span> Siemens S7, Allen Bradley, Omron, Mitsubishi
+                </p>
+                <p className="term-line output">
+                  <span className="term-label">Uptime:</span> <span className="text-cyan animate-pulse">{uptime || 'Calculating...'}</span>
                 </p>
                 <p className="term-line output">
                   <span className="term-label">Status:</span> <span className="term-badge success">READY FOR INTEGRATION</span>

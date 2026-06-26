@@ -8,11 +8,13 @@ import Projects from './components/Projects';
 import Contact from './components/Contact';
 import Admin from './components/Admin';
 import { initialProjects } from './data/initialProjects';
+import { initialTeam } from './data/initialTeam';
 
 export default function App() {
   const [currentView, setCurrentView] = useState('home'); // 'home' | 'admin'
   const [projects, setProjects] = useState([]);
   const [messages, setMessages] = useState([]);
+  const [team, setTeam] = useState([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   // Initialize Data from LocalStorage & Handle Path Routing
@@ -46,7 +48,16 @@ export default function App() {
       setMessages([]);
     }
 
-    // 3. Login state
+    // 3. Team Members
+    const localTeam = localStorage.getItem('kassel_team');
+    if (localTeam) {
+      setTeam(JSON.parse(localTeam));
+    } else {
+      localStorage.setItem('kassel_team', JSON.stringify(initialTeam));
+      setTeam(initialTeam);
+    }
+
+    // 4. Login state
     const loggedInSession = sessionStorage.getItem('kassel_is_logged_in');
     if (loggedInSession === 'true') {
       setIsLoggedIn(true);
@@ -54,6 +65,27 @@ export default function App() {
 
     return () => window.removeEventListener('popstate', handleRouting);
   }, []);
+
+  // Scroll Reveal Observer
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
+    );
+
+    const revealElements = document.querySelectorAll('.scroll-reveal');
+    revealElements.forEach((el) => observer.observe(el));
+
+    return () => {
+      revealElements.forEach((el) => observer.unobserve(el));
+    };
+  }, [currentView]);
 
   // Update projects list in state & localstorage
   const updateProjectsInStorage = (updatedList) => {
@@ -65,6 +97,12 @@ export default function App() {
   const updateMessagesInStorage = (updatedList) => {
     setMessages(updatedList);
     localStorage.setItem('kassel_messages', JSON.stringify(updatedList));
+  };
+
+  // Update team list in state & localstorage
+  const updateTeamInStorage = (updatedList) => {
+    setTeam(updatedList);
+    localStorage.setItem('kassel_team', JSON.stringify(updatedList));
   };
 
   // View & URL history synchronizer
@@ -111,6 +149,28 @@ export default function App() {
     }
   };
 
+  // CRUD for Team Members
+  const addTeamMember = (newMember) => {
+    const memberWithId = {
+      ...newMember,
+      id: 'tm-' + Date.now()
+    };
+    const newList = [...team, memberWithId];
+    updateTeamInStorage(newList);
+  };
+
+  const editTeamMember = (id, updatedMember) => {
+    const newList = team.map(t => t.id === id ? { ...updatedMember, id } : t);
+    updateTeamInStorage(newList);
+  };
+
+  const deleteTeamMember = (id) => {
+    if (window.confirm('Are you sure you want to remove this staff member?')) {
+      const newList = team.filter(t => t.id !== id);
+      updateTeamInStorage(newList);
+    }
+  };
+
   // CRUD for Messages
   const addMessage = (newMsg) => {
     const newList = [newMsg, ...messages];
@@ -133,12 +193,24 @@ export default function App() {
   const resetDatabase = () => {
     localStorage.setItem('kassel_projects', JSON.stringify(initialProjects));
     setProjects(initialProjects);
+    localStorage.setItem('kassel_team', JSON.stringify(initialTeam));
+    setTeam(initialTeam);
   };
 
   return (
     <div className="app-root-container">
       <div className="grid-bg-overlay"></div>
       <div className="cyber-scanner"></div>
+      
+      {/* Floating Animated Cyber Nodes */}
+      <div className="cyber-nodes-container">
+        <div className="cyber-node" style={{ top: '15%', left: '8%', width: '12px', height: '12px', animationDelay: '0s' }}></div>
+        <div className="cyber-node" style={{ top: '45%', left: '88%', width: '8px', height: '8px', animationDelay: '2.5s' }}></div>
+        <div className="cyber-node" style={{ top: '75%', left: '15%', width: '16px', height: '16px', animationDelay: '5s' }}></div>
+        <div className="cyber-node" style={{ top: '85%', left: '72%', width: '10px', height: '10px', animationDelay: '1.2s' }}></div>
+        <div className="cyber-node" style={{ top: '28%', left: '78%', width: '14px', height: '14px', animationDelay: '3.8s' }}></div>
+      </div>
+
       <Header 
         currentView={currentView} 
         setCurrentView={handleViewChange} 
@@ -148,23 +220,27 @@ export default function App() {
 
       {currentView === 'home' ? (
         <main className="main-content-layout">
-          <Hero setCurrentView={handleViewChange} />
-          <About />
-          <Services />
-          <Projects projects={projects} />
-          <Contact addMessage={addMessage} />
+          <div className="scroll-reveal"><Hero setCurrentView={handleViewChange} /></div>
+          <div className="scroll-reveal"><About team={team} /></div>
+          <div className="scroll-reveal"><Services /></div>
+          <div className="scroll-reveal"><Projects projects={projects} /></div>
+          <div className="scroll-reveal"><Contact addMessage={addMessage} /></div>
         </main>
       ) : (
         <main className="main-content-layout">
           <Admin 
             projects={projects}
             messages={messages}
+            team={team}
             isLoggedIn={isLoggedIn}
             handleLogin={handleLogin}
             handleLogout={handleLogout}
             onAddProject={addProject}
             onEditProject={editProject}
             onDeleteProject={deleteProject}
+            onAddTeamMember={addTeamMember}
+            onEditTeamMember={editTeamMember}
+            onDeleteTeamMember={deleteTeamMember}
             onDeleteMessage={deleteMessage}
             onMarkMessageRead={markMessageRead}
             onResetDatabase={resetDatabase}

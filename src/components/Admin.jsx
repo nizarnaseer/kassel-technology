@@ -1,15 +1,19 @@
 import React, { useState } from 'react';
-import { Lock, Unlock, LogOut, FilePlus, Eye, Trash2, CheckCircle2, RotateCcw, AlertTriangle, FileText, Mail, BarChart3, Edit, Upload } from 'lucide-react';
+import { Lock, Unlock, LogOut, FilePlus, Eye, Trash2, CheckCircle2, RotateCcw, AlertTriangle, FileText, Mail, BarChart3, Edit, Upload, Users } from 'lucide-react';
 
 export default function Admin({
   projects,
   messages,
+  team = [],
   isLoggedIn,
   handleLogin,
   handleLogout,
   onAddProject,
   onEditProject,
   onDeleteProject,
+  onAddTeamMember,
+  onEditTeamMember,
+  onDeleteTeamMember,
   onDeleteMessage,
   onMarkMessageRead,
   onResetDatabase
@@ -46,6 +50,63 @@ export default function Admin({
 
   // Message Detail State
   const [activeMessage, setActiveMessage] = useState(null);
+
+  // Team Member Form States
+  const [teamFormOpen, setTeamFormOpen] = useState(false);
+  const [isEditingTeam, setIsEditingTeam] = useState(false);
+  const [editTeamMemberId, setEditTeamMemberId] = useState(null);
+  const [teamForm, setProjectTeamForm] = useState({
+    name: '',
+    role: '',
+    bio: '',
+    level: 3
+  });
+
+  const openAddTeamForm = () => {
+    setProjectTeamForm({
+      name: '',
+      role: '',
+      bio: '',
+      level: 3
+    });
+    setIsEditingTeam(false);
+    setTeamFormOpen(true);
+  };
+
+  const openEditTeamForm = (member) => {
+    setProjectTeamForm({
+      name: member.name,
+      role: member.role,
+      bio: member.bio,
+      level: member.level
+    });
+    setIsEditingTeam(true);
+    setEditTeamMemberId(member.id);
+    setTeamFormOpen(true);
+  };
+
+  const handleTeamFormSubmit = (e) => {
+    e.preventDefault();
+    if (!teamForm.name.trim() || !teamForm.role.trim() || !teamForm.bio.trim()) {
+      alert('Please fill in all mandatory fields.');
+      return;
+    }
+
+    const finalMember = {
+      name: teamForm.name,
+      role: teamForm.role,
+      bio: teamForm.bio,
+      level: parseInt(teamForm.level)
+    };
+
+    if (isEditingTeam) {
+      onEditTeamMember(editTeamMemberId, finalMember);
+    } else {
+      onAddTeamMember(finalMember);
+    }
+
+    setTeamFormOpen(false);
+  };
 
   const onSubmitLogin = (e) => {
     e.preventDefault();
@@ -335,6 +396,15 @@ export default function Admin({
             </button>
 
             <button 
+              className={`sidebar-nav-item ${activeTab === 'team' ? 'active' : ''}`}
+              onClick={() => { setActiveTab('team'); setFormOpen(false); }}
+            >
+              <Users size={18} />
+              <span>Org Structure</span>
+              <span className="count-badge">{team.length}</span>
+            </button>
+
+            <button 
               className={`sidebar-nav-item ${activeTab === 'inbox' ? 'active' : ''}`}
               onClick={() => { setActiveTab('inbox'); setActiveMessage(null); }}
             >
@@ -596,6 +666,126 @@ export default function Admin({
             </div>
           )}
 
+          {/* Team Members Management Tab */}
+          {activeTab === 'team' && (
+            <div className="tab-pane animated">
+              <div className="workspace-header">
+                <div>
+                  <h2 className="workspace-title">Organizational Directory</h2>
+                  <p className="workspace-desc">Manage your staff directory and configure their position/level in the company hierarchy.</p>
+                </div>
+                {!teamFormOpen && (
+                  <button onClick={openAddTeamForm} className="btn-primary">
+                    <FilePlus size={16} />
+                    <span>Add Staff Member</span>
+                  </button>
+                )}
+              </div>
+
+              {teamFormOpen ? (
+                <div className="form-container-card glass-card animated">
+                  <div className="form-header-bar">
+                    <h3 className="form-title text-cyan">{isEditingTeam ? 'Modify Staff Member' : 'Add New Staff Member'}</h3>
+                    <button onClick={() => setTeamFormOpen(false)} className="btn-close-form">&times;</button>
+                  </div>
+
+                  <form onSubmit={handleTeamFormSubmit} className="project-editor-form">
+                    
+                    <div className="form-row-2">
+                      <div className="form-group">
+                        <label className="form-label">Full Name *</label>
+                        <input 
+                          type="text" 
+                          className="form-input" 
+                          placeholder="e.g. Faizah Binti Naseeruteen"
+                          value={teamForm.name}
+                          onChange={(e) => setProjectTeamForm({...teamForm, name: e.target.value})}
+                          required
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label className="form-label">Job Title / Role *</label>
+                        <input 
+                          type="text" 
+                          className="form-input" 
+                          placeholder="e.g. Sales Manager"
+                          value={teamForm.role}
+                          onChange={(e) => setProjectTeamForm({...teamForm, role: e.target.value})}
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className="form-group">
+                      <label className="form-label">Hierarchy Level (Determines position in Org Chart) *</label>
+                      <select 
+                        className="form-input select-input"
+                        value={teamForm.level}
+                        onChange={(e) => setProjectTeamForm({...teamForm, level: parseInt(e.target.value)})}
+                        required
+                      >
+                        <option value="1">Director (Level 1 - Top)</option>
+                        <option value="2">Manager (Level 2 - Mid)</option>
+                        <option value="3">Staff / Engineer (Level 3 - Bottom)</option>
+                      </select>
+                    </div>
+
+                    <div className="form-group">
+                      <label className="form-label">Professional Biography *</label>
+                      <textarea 
+                        rows="3" 
+                        className="form-input" 
+                        placeholder="Provide details about their field of study, responsibilities, and experience at Kassel..."
+                        value={teamForm.bio}
+                        onChange={(e) => setProjectTeamForm({...teamForm, bio: e.target.value})}
+                        required
+                      ></textarea>
+                    </div>
+
+                    <div className="form-actions-group">
+                      <button type="submit" className="btn-primary">
+                        <span>Save Personnel Settings</span>
+                      </button>
+                      <button type="button" onClick={() => setTeamFormOpen(false)} className="btn-secondary">
+                        <span>Cancel</span>
+                      </button>
+                    </div>
+
+                  </form>
+                </div>
+              ) : (
+                <div className="published-projects-list">
+                  {team.map((member) => (
+                    <div key={member.id} className="project-admin-row glass-card">
+                      <div className="proj-row-info">
+                        <span className="proj-row-cat text-cyan">
+                          {member.level === 1 ? 'Director (Level 1)' : member.level === 2 ? 'Manager (Level 2)' : 'Staff (Level 3)'}
+                        </span>
+                        <h4 className="proj-row-title">{member.name}</h4>
+                        <span className="proj-row-client text-muted">Title: {member.role}</span>
+                        <p className="msg-snippet text-muted mt-1">{member.bio.substring(0, 100)}...</p>
+                      </div>
+                      <div className="proj-row-actions">
+                        <button onClick={() => openEditTeamForm(member)} className="btn-row-action edit" title="Edit Profile">
+                          <Edit size={16} />
+                        </button>
+                        <button onClick={() => onDeleteTeamMember(member.id)} className="btn-row-action delete" title="Remove Profile">
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                  {team.length === 0 && (
+                    <div className="empty-state-list text-center">
+                      <AlertTriangle size={32} className="text-amber" />
+                      <p>No staff directory exists. Reset DB to restore defaults.</p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Inbox Tab */}
           {activeTab === 'inbox' && (
             <div className="tab-pane animated">
@@ -703,10 +893,14 @@ export default function Admin({
                 {/* Stats Widget */}
                 <div className="settings-widget glass-card">
                   <h3 className="widget-title">Database Overview</h3>
-                  <div className="stats-row-3">
+                  <div className="stats-row-4">
                     <div className="stat-box">
                       <span className="stat-val">{projects.length}</span>
                       <span className="stat-label">Total Case Studies</span>
+                    </div>
+                    <div className="stat-box">
+                      <span className="stat-val">{team.length}</span>
+                      <span className="stat-label">Staff Personnel</span>
                     </div>
                     <div className="stat-box">
                       <span className="stat-val">{messages.length}</span>
@@ -1307,6 +1501,12 @@ export default function Admin({
           gap: 1.5rem;
         }
 
+        .stats-row-4 {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 1.5rem;
+        }
+
         .stat-box {
           background: rgba(0,0,0,0.2);
           border: 1px solid var(--border-color);
@@ -1401,7 +1601,7 @@ export default function Admin({
           .sidebar-nav-item {
             width: 100%;
           }
-          .form-row-2, .form-row-3, .stats-row-3 {
+          .form-row-2, .form-row-3, .stats-row-3, .stats-row-4 {
             grid-template-columns: 1fr;
             gap: 0.75rem;
           }

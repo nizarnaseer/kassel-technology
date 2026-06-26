@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Eye, Target, Sparkles, Users, Award, Shield, MessageSquare, ChevronDown, Check } from 'lucide-react';
 
-export default function About() {
+export default function About({ team = [] }) {
   const [selectedMember, setSelectedMember] = useState(null);
 
   const corePrinciples = [
@@ -27,45 +27,12 @@ export default function About() {
     }
   ];
 
-  const teamData = {
-    director: {
-      name: "Muhammad Riyaz Bin Shaffar Saman",
-      role: "Director / Founder",
-      bio: "Started Kassel Technology in 2021 after working in the Automation System Integrator field. Experienced in industrial PLC systems and project commissioning. Guided by specialist mentor Yasir Amzad Ali."
-    },
-    managers: [
-      {
-        name: "Faizah Binti Naseeruteen",
-        role: "Account & Treasury Manager",
-        bio: "Manages Kassel Technology's corporate accounts, financial risk reporting, and banking relations with CIMB Bank."
-      },
-      {
-        name: "Muhammad Irshad Bin Shaffar Saman",
-        role: "Technical Manager",
-        bio: "Leads engineering operations, protocol integration, custom gateway development (including the Prolink 23 system), and technical site testing."
-      },
-      {
-        name: "Mohamed Rizwan Bin Shuaib",
-        role: "Marketing Manager",
-        bio: "Drives Kassel's strategic positioning in the Malaysian industrial automation market, securing key regional integration partnerships."
-      }
-    ],
-    staff: [
-      {
-        name: "Muhammad Adi Putra Bin Azizan",
-        role: "Junior Engineer",
-        bio: "Specializes in wiring controls, PLC cabinet fabrication, I/O verification testing, and on-site wiring layouts."
-      },
-      {
-        name: "Muhammad Syamim Asyraf",
-        role: "Sales Manager",
-        bio: "Responsible for commercial proposals, service agreements, customer relations, and coordinator of breakdown services."
-      }
-    ]
-  };
+  const directors = team.filter(t => t.level === 1);
+  const managers = team.filter(t => t.level === 2);
+  const staff = team.filter(t => t.level === 3);
 
   const handleMemberClick = (member) => {
-    if (selectedMember && selectedMember.name === member.name) {
+    if (selectedMember && selectedMember.id === member.id) {
       setSelectedMember(null);
     } else {
       setSelectedMember(member);
@@ -153,53 +120,63 @@ export default function About() {
 
         <div className="org-chart-container">
           
-          {/* Level 1: Director */}
-          <div className="org-row level-1">
-            <div 
-              className={`team-member-node director-node ${selectedMember?.name === teamData.director.name ? 'active' : ''}`}
-              onClick={() => handleMemberClick(teamData.director)}
-            >
-              <div className="node-badge">Director</div>
-              <span className="node-name">{teamData.director.name}</span>
-              <span className="node-role">{teamData.director.role}</span>
+          {/* Level 1: Directors */}
+          {directors.length > 0 && (
+            <div className="org-row level-1">
+              {directors.map((d, idx) => (
+                <div key={d.id || idx} className="org-col">
+                  <div 
+                    className={`team-member-node director-node ${selectedMember?.id === d.id ? 'active' : ''}`}
+                    onClick={() => handleMemberClick(d)}
+                  >
+                    <div className="node-badge">Director</div>
+                    <span className="node-name">{d.name}</span>
+                    <span className="node-role">{d.role}</span>
+                  </div>
+                </div>
+              ))}
             </div>
-          </div>
+          )}
 
-          <div className="org-connector-vertical"></div>
+          {directors.length > 0 && managers.length > 0 && <div className="org-connector-vertical"></div>}
 
           {/* Level 2: Managers */}
-          <div className="org-row level-2">
-            {teamData.managers.map((m, idx) => (
-              <div key={idx} className="org-col">
-                <div 
-                  className={`team-member-node manager-node ${selectedMember?.name === m.name ? 'active' : ''}`}
-                  onClick={() => handleMemberClick(m)}
-                >
-                  <div className="node-badge">Manager</div>
-                  <span className="node-name">{m.name}</span>
-                  <span className="node-role">{m.role}</span>
+          {managers.length > 0 && (
+            <div className="org-row level-2">
+              {managers.map((m, idx) => (
+                <div key={m.id || idx} className="org-col">
+                  <div 
+                    className={`team-member-node manager-node ${selectedMember?.id === m.id ? 'active' : ''}`}
+                    onClick={() => handleMemberClick(m)}
+                  >
+                    <div className="node-badge">Manager</div>
+                    <span className="node-name">{m.name}</span>
+                    <span className="node-role">{m.role}</span>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
 
-          <div className="org-connector-vertical"></div>
+          {managers.length > 0 && staff.length > 0 && <div className="org-connector-vertical"></div>}
 
           {/* Level 3: Staff */}
-          <div className="org-row level-3">
-            {teamData.staff.map((s, idx) => (
-              <div key={idx} className="org-col">
-                <div 
-                  className={`team-member-node staff-node ${selectedMember?.name === s.name ? 'active' : ''}`}
-                  onClick={() => handleMemberClick(s)}
-                >
-                  <div className="node-badge">{s.role === 'Junior Engineer' ? 'Technical' : 'Sales'}</div>
-                  <span className="node-name">{s.name}</span>
-                  <span className="node-role">{s.role}</span>
+          {staff.length > 0 && (
+            <div className="org-row level-3">
+              {staff.map((s, idx) => (
+                <div key={s.id || idx} className="org-col">
+                  <div 
+                    className={`team-member-node staff-node ${selectedMember?.id === s.id ? 'active' : ''}`}
+                    onClick={() => handleMemberClick(s)}
+                  >
+                    <div className="node-badge">{s.role.toLowerCase().includes('engineer') ? 'Technical' : 'Sales'}</div>
+                    <span className="node-name">{s.name}</span>
+                    <span className="node-role">{s.role}</span>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
 
         </div>
 
