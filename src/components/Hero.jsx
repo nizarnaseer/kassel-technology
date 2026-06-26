@@ -332,7 +332,7 @@ export default function Hero({ setCurrentView }) {
             <div className="telemetry-widget glass-card">
               <div className="telemetry-header">
                 <div className="led-indicator green pulse"></div>
-                <span className="telemetry-title">SCADA FEED: PLC_01</span>
+                <span className="telemetry-title">PLC_01 MONITOR</span>
                 <span className="telemetry-status text-cyan">{telemetry.status}</span>
               </div>
               <div className="telemetry-grid">

@@ -91,74 +91,133 @@ export default function Services() {
         
         {/* Left Side: Services Navigation Tabs */}
         <div className="services-tabs">
-          {servicesData.map((service, idx) => (
-            <div 
-              key={idx}
-              className={`service-tab-item glass-card ${activeTab === idx ? 'active' : ''}`}
-              onClick={() => setActiveTab(idx)}
-            >
-              <div className={`tab-icon-box ${activeTab === idx ? 'cyan-bg' : ''}`}>
-                {service.icon}
-              </div>
-              <div className="tab-text-box">
-                <span className="tab-badge">{service.badge}</span>
-                <h4 className="tab-title">{service.title}</h4>
-              </div>
-              <ChevronRight size={18} className="tab-chevron" />
-            </div>
-          ))}
-        </div>
-
-        {/* Right Side: Active Service Details Panel */}
-        <div className="services-detail-panel glass-card animated" key={activeTab}>
-          <div className="detail-panel-header">
-            <span className="panel-badge-top">{servicesData[activeTab].badge}</span>
-            <h3 className="panel-main-title text-cyan">{servicesData[activeTab].title}</h3>
-            <span className="panel-subtitle">{servicesData[activeTab].subtitle}</span>
-          </div>
-
-          <p className="panel-summary">{servicesData[activeTab].summary}</p>
-          
-          <div className="panel-divider"></div>
-
-          <div className="panel-content-grid">
-            
-            <div className="panel-list-section">
-              <h4 className="panel-section-title">Capabilities & Scope</h4>
-              <ul className="capabilities-ul">
-                {servicesData[activeTab].details.map((detail, dIdx) => (
-                  <li key={dIdx}>
-                    <CheckCircle2 size={16} className="text-cyan text-align-top" />
-                    <span>{detail}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="panel-tech-section">
-              <h4 className="panel-section-title">Systems & Platforms</h4>
-              <div className="platforms-container">
-                {servicesData[activeTab].platforms.map((platform, pIdx) => (
-                  <div key={pIdx} className="platform-row">
-                    <span className="platform-brand">{platform.brand}</span>
-                    <span className="platform-models">{platform.models}</span>
+          {servicesData.map((service, idx) => {
+            const isActive = activeTab === idx;
+            return (
+              <React.Fragment key={idx}>
+                <div 
+                  className={`service-tab-item glass-card ${isActive ? 'active' : ''}`}
+                  onClick={() => setActiveTab(isActive ? -1 : idx)}
+                >
+                  <div className={`tab-icon-box ${isActive ? 'cyan-bg' : ''}`}>
+                    {service.icon}
                   </div>
-                ))}
-              </div>
-
-              {servicesData[activeTab].emergencyAlert && (
-                <div className="emergency-alert-box">
-                  <AlertTriangle className="text-amber animate-pulse" size={24} />
-                  <div>
-                    <h5 className="alert-box-title text-amber">Emergency Helpline</h5>
-                    <p className="alert-box-desc">Call <strong>+6014-4003060</strong> for immediate breakdown deployment. Available 24/7.</p>
+                  <div className="tab-text-box">
+                    <span className="tab-badge">{service.badge}</span>
+                    <h4 className="tab-title">{service.title}</h4>
                   </div>
+                  <ChevronRight size={18} className="tab-chevron" />
                 </div>
-              )}
+
+                {/* Mobile description panel: nested inline */}
+                {isActive && (
+                  <div className="services-detail-mobile glass-card animated">
+                    <div className="detail-panel-header">
+                      <span className="panel-badge-top">{service.badge}</span>
+                      <h3 className="panel-main-title text-cyan">{service.title}</h3>
+                      <span className="panel-subtitle">{service.subtitle}</span>
+                    </div>
+
+                    <p className="panel-summary">{service.summary}</p>
+                    
+                    <div className="panel-divider"></div>
+
+                    <div className="panel-content-grid">
+                      
+                      <div className="panel-list-section">
+                        <h4 className="panel-section-title">Capabilities & Scope</h4>
+                        <ul className="capabilities-ul">
+                          {service.details.map((detail, dIdx) => (
+                            <li key={dIdx}>
+                              <CheckCircle2 size={16} className="text-cyan text-align-top" />
+                              <span>{detail}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      <div className="panel-tech-section">
+                        <h4 className="panel-section-title">Systems & Platforms</h4>
+                        <div className="platforms-container">
+                          {service.platforms.map((platform, pIdx) => (
+                            <div key={pIdx} className="platform-row">
+                              <span className="platform-brand">{platform.brand}</span>
+                              <span className="platform-models">{platform.models}</span>
+                            </div>
+                          ))}
+                        </div>
+
+                        {service.emergencyAlert && (
+                          <div className="emergency-alert-box">
+                            <AlertTriangle className="text-amber animate-pulse" size={24} />
+                            <div>
+                              <h5 className="alert-box-title text-amber">Emergency Helpline</h5>
+                              <p className="alert-box-desc">Call <strong>+6014-4003060</strong> for immediate breakdown deployment. Available 24/7.</p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                    </div>
+                  </div>
+                )}
+              </React.Fragment>
+            );
+          })}
+        </div>
+
+        {/* Right Side: Active Service Details Panel (Desktop Only) */}
+        {activeTab !== -1 && (
+          <div className="services-detail-panel glass-card animated" key={activeTab}>
+            <div className="detail-panel-header">
+              <span className="panel-badge-top">{servicesData[activeTab].badge}</span>
+              <h3 className="panel-main-title text-cyan">{servicesData[activeTab].title}</h3>
+              <span className="panel-subtitle">{servicesData[activeTab].subtitle}</span>
             </div>
 
+            <p className="panel-summary">{servicesData[activeTab].summary}</p>
+            
+            <div className="panel-divider"></div>
+
+            <div className="panel-content-grid">
+              
+              <div className="panel-list-section">
+                <h4 className="panel-section-title">Capabilities & Scope</h4>
+                <ul className="capabilities-ul">
+                  {servicesData[activeTab].details.map((detail, dIdx) => (
+                    <li key={dIdx}>
+                      <CheckCircle2 size={16} className="text-cyan text-align-top" />
+                      <span>{detail}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="panel-tech-section">
+                <h4 className="panel-section-title">Systems & Platforms</h4>
+                <div className="platforms-container">
+                  {servicesData[activeTab].platforms.map((platform, pIdx) => (
+                    <div key={pIdx} className="platform-row">
+                      <span className="platform-brand">{platform.brand}</span>
+                      <span className="platform-models">{platform.models}</span>
+                    </div>
+                  ))}
+                </div>
+
+                {servicesData[activeTab].emergencyAlert && (
+                  <div className="emergency-alert-box">
+                    <AlertTriangle className="text-amber animate-pulse" size={24} />
+                    <div>
+                      <h5 className="alert-box-title text-amber">Emergency Helpline</h5>
+                      <p className="alert-box-desc">Call <strong>+6014-4003060</strong> for immediate breakdown deployment. Available 24/7.</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+            </div>
           </div>
-        </div>
+        )}
 
       </div>
 
@@ -390,23 +449,54 @@ export default function Services() {
           line-height: 1.4;
         }
 
+        .services-detail-mobile {
+          display: none;
+        }
+
+        @keyframes slideDown {
+          from { opacity: 0; transform: translateY(-10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
         @media (max-width: 1024px) {
           .services-layout {
             grid-template-columns: 1fr;
-            gap: 2rem;
+            gap: 1.25rem;
           }
           .services-detail-panel {
-            min-height: auto;
+            display: none;
+          }
+          .services-detail-mobile {
+            display: flex;
+            flex-direction: column;
+            padding: 2.25rem 2rem;
+            margin-top: -1.25rem;
+            margin-bottom: 0.5rem;
+            border-top: none;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+            border-color: var(--accent-cyan);
+            background: rgba(6, 182, 212, 0.02);
+            animation: slideDown 0.3s ease-out forwards;
+          }
+          .service-tab-item.active {
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+            border-bottom-color: transparent;
+            box-shadow: none;
+          }
+          .service-tab-item.active .tab-chevron {
+            transform: rotate(90deg) !important;
           }
         }
 
         @media (max-width: 600px) {
+          .services-detail-mobile {
+            padding: 1.5rem;
+          }
           .panel-content-grid {
             grid-template-columns: 1fr;
             gap: 2rem;
-          }
-          .services-detail-panel {
-            padding: 1.5rem;
           }
         }
       `}</style>
