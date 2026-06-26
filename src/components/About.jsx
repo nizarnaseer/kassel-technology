@@ -48,7 +48,7 @@ export default function About({ team = [] }) {
         <h2 className="section-title">About Kassel Technology</h2>
         <p className="section-description">
           A rising leader for Industrial Automation Services in the Malaysia market. 
-          Founded in 2021 with the mission of delivering technical and service excellence.
+          Providing nationwide engineering and on-site support across Peninsular Malaysia, Sabah, and Sarawak.
         </p>
       </div>
 
@@ -57,7 +57,7 @@ export default function About({ team = [] }) {
           <h3 className="about-subheading">Our Journey</h3>
           <p className="about-paragraph">
             With the knowledge and experience accumulated from working in a top Automation System Integrator Company, 
-            our founder decided to start his own startup in 2021 to extend the reach of industrial automation solutions in Malaysia. 
+            our founder decided to start his own startup in 2021 to extend the reach of industrial automation solutions across West & East Malaysia (including Sabah & Sarawak). 
             Kassel Technology focuses on providing advanced engineering services. We have gained a reputation in the industry for 
             technical and service excellence by implementing our mission of <strong>Quality Solutions</strong>.
           </p>

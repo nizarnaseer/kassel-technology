@@ -54,7 +54,7 @@ export default function Services() {
       platforms: [
         { brand: "Industries Served", models: "Manufacturing, Agriculture, Feed Mills, Food Processing, Logistics" },
         { brand: "Equipment Types", models: "Heavy machinery, packaging lines, conveyors, battery chargers, pump controllers" },
-        { brand: "Support Line", models: "24/7 Emergency helpline active across Selangor and surrounding industrial states" }
+        { brand: "Support Line", models: "24/7 Emergency helpline active across Selangor, with nationwide deployment including East Malaysia (Sabah & Sarawak)" }
       ],
       emergencyAlert: true
     },
