@@ -503,13 +503,14 @@ export default function About({ team = [] }) {
           .org-row {
             flex-direction: column;
             align-items: center;
-            gap: 1.5rem;
+            gap: 2.25rem;
           }
           .org-connector-vertical {
             display: none;
           }
           .org-chart-container {
             padding: 2rem 1rem;
+            gap: 2.25rem;
           }
         }
       `}</style>
