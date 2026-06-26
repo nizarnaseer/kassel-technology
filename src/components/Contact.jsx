@@ -40,7 +40,25 @@ export default function Contact({ addMessage }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validate()) {
-      // Create new message object
+      // 1. Submit to Formspree via AJAX
+      fetch('https://formspree.io/f/mjgqwear', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      })
+      .then(response => {
+        if (response.ok) {
+          console.log('Formspree submission successful');
+        } else {
+          console.error('Formspree submission failed');
+        }
+      })
+      .catch(error => console.error('Formspree error:', error));
+
+      // 2. Local Backup logging
       const newMessage = {
         id: 'msg-' + Date.now(),
         ...formData,
@@ -48,7 +66,6 @@ export default function Contact({ addMessage }) {
         read: false
       };
       
-      // Call parent action
       addMessage(newMessage);
 
       // Reset form
