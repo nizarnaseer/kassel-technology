@@ -1,22 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ArrowRight, Cpu, CheckCircle2, ShieldAlert } from 'lucide-react';
+import { ArrowRight, CheckCircle2, ShieldAlert } from 'lucide-react';
 
-export default function Hero({ setCurrentView }) {
+export default function Hero({ setCurrentView: _setCurrentView }) {
   const [uptime, setUptime] = useState('');
-  
-  // Telemetry Widget state
-  const [telemetry, setTelemetry] = useState({
-    frequency: '50.00',
-    scanRate: 12,
-    voltage: '230.1',
-    status: 'NOMINAL',
-    logs: [
-      '[04:12:01] SYS_INIT: SUCCESS',
-      '[04:12:03] MODBUS_LINK: ACTIVE',
-      '[04:12:05] PLC_READY: TRUE'
-    ]
-  });
-  const [wavePhase, setWavePhase] = useState(0);
 
   // Canvas Node-Network refs
   const canvasRef = useRef(null);
@@ -38,52 +24,6 @@ export default function Hero({ setCurrentView }) {
     updateTimer();
     const interval = setInterval(updateTimer, 1000);
     return () => clearInterval(interval);
-  }, []);
-
-  // SCADA Telemetry simulator effect
-  useEffect(() => {
-    // 1. Cycle telemetry numerical stats
-    const statsInterval = setInterval(() => {
-      setTelemetry(prev => {
-        const newFreq = (50.00 + (Math.random() - 0.5) * 0.08).toFixed(2);
-        const newVolt = (230.0 + (Math.random() - 0.5) * 0.4).toFixed(1);
-        const newScan = Math.floor(10 + Math.random() * 4);
-        
-        // Cycle logs occasionally
-        let newLogs = [...prev.logs];
-        if (Math.random() > 0.6) {
-          const events = [
-            `PLC_IN_0${Math.floor(Math.random()*8)}: HIGH`,
-            `PLC_IN_0${Math.floor(Math.random()*8)}: LOW`,
-            `MODBUS_TX: OK`,
-            `SCADA_POLL: ${newScan}ms`,
-            `FREQ_STABLE: ${newFreq}Hz`,
-            `VOLT_OK: ${newVolt}V`
-          ];
-          const time = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-          newLogs.push(`[${time}] ${events[Math.floor(Math.random() * events.length)]}`);
-          if (newLogs.length > 3) newLogs.shift();
-        }
-        
-        return {
-          frequency: newFreq,
-          voltage: newVolt,
-          scanRate: newScan,
-          status: 'NOMINAL',
-          logs: newLogs
-        };
-      });
-    }, 1800);
-
-    // 2. Cycle wavePhase for scrolling sine wave (smooth animation)
-    const waveInterval = setInterval(() => {
-      setWavePhase(prev => prev + 0.15);
-    }, 70);
-
-    return () => {
-      clearInterval(statsInterval);
-      clearInterval(waveInterval);
-    };
   }, []);
 
   // Canvas interactive particle network animation
@@ -194,21 +134,7 @@ export default function Hero({ setCurrentView }) {
     };
   }, []);
 
-  // Generate SVG waveform path
-  const generateWavePath = () => {
-    const width = 180;
-    const height = 40;
-    const points = [];
-    const amplitude = 12;
-    const frequency = 0.08;
-    
-    for (let x = 0; x <= width; x += 4) {
-      const y = height / 2 + Math.sin(x * frequency - wavePhase) * amplitude;
-      points.push(`${x},${y}`);
-    }
-    
-    return `M ${points.join(' L ')}`;
-  };
+
 
   const handleMouseMove = (e) => {
     if (!heroRef.current) return;
@@ -325,41 +251,6 @@ export default function Hero({ setCurrentView }) {
                   <span className="widget-label">Emergency Support</span>
                   <span className="widget-val text-amber">Active (24/7)</span>
                 </div>
-              </div>
-            </div>
-
-            {/* Live SCADA Telemetry Widget */}
-            <div className="telemetry-widget glass-card">
-              <div className="telemetry-header">
-                <div className="led-indicator green pulse"></div>
-                <span className="telemetry-title"></span>
-                <span className="telemetry-status text-cyan">{telemetry.status}</span>
-              </div>
-              <div className="telemetry-grid">
-                <div className="telemetry-stat">
-                  <span className="stat-label">GRID FREQ</span>
-                  <span className="stat-val text-cyan">{telemetry.frequency} Hz</span>
-                </div>
-                <div className="telemetry-stat">
-                  <span className="stat-label">SCAN RATE</span>
-                  <span className="stat-val text-cyan">{telemetry.scanRate} ms</span>
-                </div>
-              </div>
-              
-              <div className="telemetry-chart-container">
-                <svg width="100%" height="40" viewBox="0 0 180 40" className="telemetry-svg">
-                  <line x1="0" y1="20" x2="180" y2="20" stroke="rgba(255,255,255,0.06)" strokeDasharray="3,3" />
-                  <line x1="45" y1="0" x2="45" y2="40" stroke="rgba(255,255,255,0.06)" strokeDasharray="3,3" />
-                  <line x1="90" y1="0" x2="90" y2="40" stroke="rgba(255,255,255,0.06)" strokeDasharray="3,3" />
-                  <line x1="135" y1="0" x2="135" y2="40" stroke="rgba(255,255,255,0.06)" strokeDasharray="3,3" />
-                  <path d={generateWavePath()} fill="none" stroke="var(--accent-cyan)" strokeWidth="1.5" className="glow-stroke-cyan" />
-                </svg>
-              </div>
-              
-              <div className="telemetry-logs">
-                {telemetry.logs.map((log, i) => (
-                  <div key={i} className="telemetry-log-line">{log}</div>
-                ))}
               </div>
             </div>
           </div>
@@ -626,138 +517,7 @@ export default function Hero({ setCurrentView }) {
           z-index: 1;
         }
 
-        /* SCADA Telemetry Widget */
-        .telemetry-widget {
-          position: absolute;
-          top: -40px;
-          right: -45px;
-          width: 230px;
-          padding: 1rem;
-          border-radius: var(--border-radius);
-          box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-          z-index: 15;
-          animation: float-reverse 5s ease-in-out infinite;
-          border: 1px solid rgba(6, 182, 212, 0.25);
-          background: rgba(11, 15, 25, 0.7);
-          backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
-        }
 
-        @keyframes float-reverse {
-          0% { transform: translateY(0px); }
-          50% { transform: translateY(8px); }
-          100% { transform: translateY(0px); }
-        }
-
-        .telemetry-header {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          margin-bottom: 0.75rem;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-          padding-bottom: 0.5rem;
-        }
-
-        .led-indicator {
-          width: 8px;
-          height: 8px;
-          border-radius: 50%;
-        }
-
-        .led-indicator.green {
-          background: #10b981;
-          box-shadow: 0 0 8px #10b981;
-        }
-
-        .led-indicator.pulse {
-          animation: led-blink 1.5s infinite;
-        }
-
-        @keyframes led-blink {
-          0%, 100% { opacity: 0.4; }
-          50% { opacity: 1; }
-        }
-
-        .telemetry-title {
-          font-size: 0.65rem;
-          font-weight: 700;
-          letter-spacing: 0.05em;
-          color: var(--text-secondary);
-          flex-grow: 1;
-        }
-
-        .telemetry-status {
-          font-size: 0.65rem;
-          font-weight: 700;
-          letter-spacing: 0.05em;
-        }
-
-        .telemetry-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 0.5rem;
-          margin-bottom: 0.75rem;
-        }
-
-        .telemetry-stat {
-          display: flex;
-          flex-direction: column;
-          gap: 0.15rem;
-        }
-
-        .stat-label {
-          font-size: 0.55rem;
-          font-weight: 600;
-          color: var(--text-muted);
-          text-transform: uppercase;
-        }
-
-        .stat-val {
-          font-size: 0.8rem;
-          font-weight: 700;
-          font-family: monospace;
-        }
-
-        .telemetry-chart-container {
-          background: rgba(0, 0, 0, 0.35);
-          border-radius: 4px;
-          padding: 0.25rem;
-          border: 1px solid rgba(255, 255, 255, 0.03);
-          margin-bottom: 0.75rem;
-          height: 44px;
-          display: flex;
-          align-items: center;
-        }
-
-        .telemetry-svg {
-          display: block;
-          overflow: visible;
-        }
-
-        .glow-stroke-cyan {
-          filter: drop-shadow(0px 0px 3px rgba(6, 182, 212, 0.6));
-        }
-
-        .telemetry-logs {
-          font-family: monospace;
-          font-size: 0.55rem;
-          color: var(--text-muted);
-          background: rgba(0, 0, 0, 0.45);
-          padding: 0.35rem 0.5rem;
-          border-radius: 4px;
-          height: 52px;
-          overflow: hidden;
-          display: flex;
-          flex-direction: column;
-          gap: 0.25rem;
-          border: 1px solid rgba(255, 255, 255, 0.03);
-        }
-
-        .telemetry-log-line {
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
 
         @media (max-width: 1024px) {
           .hero-container {
@@ -792,13 +552,7 @@ export default function Hero({ setCurrentView }) {
             margin-top: 1rem;
             width: 100%;
           }
-          .telemetry-widget {
-            position: relative;
-            top: 0;
-            right: 0;
-            margin-top: 1rem;
-            width: 100%;
-          }
+
         }
       `}</style>
     </section>
