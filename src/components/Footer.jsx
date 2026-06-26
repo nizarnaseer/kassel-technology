@@ -16,7 +16,7 @@ export default function Footer({ setCurrentView }) {
         
         <div className="footer-brand-column">
           <div className="footer-logo">
-            <Cpu className="text-cyan" size={28} />
+            <img src="/apple-touch-icon.png" alt="Kassel Technology Logo" className="logo-icon" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
             <div className="footer-logo-text">
               <span className="footer-logo-title">KASSEL</span>
               <span className="footer-logo-subtitle">TECHNOLOGY</span>
