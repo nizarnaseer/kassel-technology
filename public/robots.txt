@@ -1,0 +1,8 @@
+# robots.txt for Kassel Technology
+# Allow search engines to index everything except the private admin dashboard
+
+User-agent: *
+Allow: /
+Disallow: /admin
+
+Sitemap: https://kasseltech.com/sitemap.xml

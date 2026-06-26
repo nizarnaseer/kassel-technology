@@ -37,9 +37,9 @@ export default function Hero({ setCurrentView }) {
           </div>
           
           <h1 className="hero-title">
-            Your Best <br />
-            <span className="glow-text-cyan">Automation Solution</span> <br />
-            Partner
+            Your Trusted <br />
+            <span className="glow-text-cyan">Industrial Automation</span> <br />
+            & SCADA Partner
           </h1>
           
           <p className="hero-description">
