@@ -19,6 +19,8 @@ export default function App() {
   const [team, setTeam] = useState([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [activeToast, setActiveToast] = useState(null);
+  const [adminActiveTab, setAdminActiveTab] = useState('projects');
+  const [adminActiveMessage, setAdminActiveMessage] = useState(null);
 
   // Initialize Routing & Handle Path Routing
   useEffect(() => {
@@ -496,6 +498,10 @@ export default function App() {
             onDeleteMessage={deleteMessage}
             onMarkMessageRead={markMessageRead}
             onResetDatabase={resetDatabase}
+            activeTab={adminActiveTab}
+            setActiveTab={setAdminActiveTab}
+            activeMessage={adminActiveMessage}
+            setActiveMessage={setAdminActiveMessage}
           />
         </main>
       )}
@@ -504,7 +510,16 @@ export default function App() {
 
       {/* Real-time Holographic Toast Alert */}
       {activeToast && (
-        <div className="toast-notification glass-card" onClick={() => { handleViewChange('admin'); setActiveToast(null); }}>
+        <div className="toast-notification glass-card" onClick={() => { 
+          handleViewChange('admin'); 
+          setAdminActiveTab('inbox');
+          const msg = messages.find(m => m.id === activeToast.id);
+          if (msg) {
+            setAdminActiveMessage(msg);
+            markMessageRead(msg.id);
+          }
+          setActiveToast(null); 
+        }}>
           <div className="toast-header" onClick={(e) => e.stopPropagation()}>
             <span className="toast-indicator pulse"></span>
             <span className="toast-title">New Message Received</span>

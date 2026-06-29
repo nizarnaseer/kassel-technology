@@ -16,15 +16,18 @@ export default function Admin({
   onDeleteTeamMember,
   onDeleteMessage,
   onMarkMessageRead,
-  onResetDatabase
+  onResetDatabase,
+  activeTab,
+  setActiveTab,
+  activeMessage,
+  setActiveMessage
 }) {
   // Login State
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
 
-  // Active Tab
-  const [activeTab, setActiveTab] = useState('projects'); // 'projects', 'inbox', 'settings'
+  // Active Tab is controlled by parent App.jsx
 
   // Project Form States
   const [isEditing, setIsEditing] = useState(false);
@@ -48,8 +51,7 @@ export default function Admin({
     image: '/assets/projects/pumphouse.jpg'
   });
 
-  // Message Detail State
-  const [activeMessage, setActiveMessage] = useState(null);
+  // Message Detail State is controlled by parent App.jsx
 
   // Team Member Form States
   const [teamFormOpen, setTeamFormOpen] = useState(false);
