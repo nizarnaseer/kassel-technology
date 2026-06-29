@@ -9,6 +9,8 @@ import Contact from './components/Contact';
 import Admin from './components/Admin';
 import { initialProjects } from './data/initialProjects';
 import { initialTeam } from './data/initialTeam';
+import { db, isFirebaseEnabled } from './firebase';
+import { collection, onSnapshot, doc, setDoc, deleteDoc, getDocs } from 'firebase/firestore';
 
 export default function App() {
   const [currentView, setCurrentView] = useState('home'); // 'home' | 'admin'
@@ -17,7 +19,7 @@ export default function App() {
   const [team, setTeam] = useState([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  // Initialize Data from LocalStorage & Handle Path Routing
+  // Initialize Routing & Handle Path Routing
   useEffect(() => {
     const handleRouting = () => {
       if (window.location.pathname === '/admin') {
@@ -30,34 +32,7 @@ export default function App() {
     handleRouting();
     window.addEventListener('popstate', handleRouting);
 
-    // 1. Projects
-    const localProjects = localStorage.getItem('kassel_projects');
-    if (localProjects) {
-      setProjects(JSON.parse(localProjects));
-    } else {
-      localStorage.setItem('kassel_projects', JSON.stringify(initialProjects));
-      setProjects(initialProjects);
-    }
-
-    // 2. Messages
-    const localMessages = localStorage.getItem('kassel_messages');
-    if (localMessages) {
-      setMessages(JSON.parse(localMessages));
-    } else {
-      localStorage.setItem('kassel_messages', JSON.stringify([]));
-      setMessages([]);
-    }
-
-    // 3. Team Members
-    const localTeam = localStorage.getItem('kassel_team');
-    if (localTeam) {
-      setTeam(JSON.parse(localTeam));
-    } else {
-      localStorage.setItem('kassel_team', JSON.stringify(initialTeam));
-      setTeam(initialTeam);
-    }
-
-    // 4. Login state
+    // Login state session recovery
     const loggedInSession = sessionStorage.getItem('kassel_is_logged_in');
     if (loggedInSession === 'true') {
       setIsLoggedIn(true);
@@ -66,10 +41,113 @@ export default function App() {
     return () => window.removeEventListener('popstate', handleRouting);
   }, []);
 
+  // Initialize Database: Firebase Firestore with local LocalStorage fallback
+  useEffect(() => {
+    if (!isFirebaseEnabled) {
+      // 1. Projects local storage
+      const localProjects = localStorage.getItem('kassel_projects');
+      if (localProjects) {
+        setProjects(JSON.parse(localProjects));
+      } else {
+        localStorage.setItem('kassel_projects', JSON.stringify(initialProjects));
+        setProjects(initialProjects);
+      }
+
+      // 2. Messages local storage
+      const localMessages = localStorage.getItem('kassel_messages');
+      if (localMessages) {
+        setMessages(JSON.parse(localMessages));
+      } else {
+        localStorage.setItem('kassel_messages', JSON.stringify([]));
+        setMessages([]);
+      }
+
+      // 3. Team local storage
+      const localTeam = localStorage.getItem('kassel_team');
+      if (localTeam) {
+        setTeam(JSON.parse(localTeam));
+      } else {
+        localStorage.setItem('kassel_team', JSON.stringify(initialTeam));
+        setTeam(initialTeam);
+      }
+      return;
+    }
+
+    // Firebase is enabled
+    let isCancelled = false;
+    let cleanupListeners = () => {};
+
+    const initializeFirebaseAndListen = async () => {
+      try {
+        // A. Seed Projects if collection is empty
+        const projectsRef = collection(db, 'projects');
+        const projectsSnap = await getDocs(projectsRef);
+        if (projectsSnap.empty && !isCancelled) {
+          console.log('Firebase Database: Seeding default projects...');
+          for (const proj of initialProjects) {
+            await setDoc(doc(db, 'projects', proj.id), proj);
+          }
+        }
+
+        // B. Seed Team if collection is empty
+        const teamRef = collection(db, 'team');
+        const teamSnap = await getDocs(teamRef);
+        if (teamSnap.empty && !isCancelled) {
+          console.log('Firebase Database: Seeding default team structure...');
+          for (const member of initialTeam) {
+            await setDoc(doc(db, 'team', member.id), member);
+          }
+        }
+      } catch (error) {
+        console.error('Firebase initialization seeding error:', error);
+      }
+
+      if (isCancelled) return;
+
+      // C. Set up real-time sync listeners
+      const unsubProjects = onSnapshot(collection(db, 'projects'), (snapshot) => {
+        const projs = [];
+        snapshot.forEach((doc) => {
+          projs.push({ id: doc.id, ...doc.data() });
+        });
+        setProjects(projs);
+      });
+
+      const unsubTeam = onSnapshot(collection(db, 'team'), (snapshot) => {
+        const members = [];
+        snapshot.forEach((doc) => {
+          members.push({ id: doc.id, ...doc.data() });
+        });
+        setTeam(members);
+      });
+
+      const unsubMessages = onSnapshot(collection(db, 'messages'), (snapshot) => {
+        const msgs = [];
+        snapshot.forEach((doc) => {
+          msgs.push({ id: doc.id, ...doc.data() });
+        });
+        msgs.sort((a, b) => new Date(b.date) - new Date(a.date));
+        setMessages(msgs);
+      });
+
+      cleanupListeners = () => {
+        unsubProjects();
+        unsubTeam();
+        unsubMessages();
+      };
+    };
+
+    initializeFirebaseAndListen();
+
+    return () => {
+      isCancelled = true;
+      cleanupListeners();
+    };
+  }, []);
+
   // Prevent right-click context menu (on non-inputs) and image dragging to protect content
   useEffect(() => {
     const handleContextMenu = (e) => {
-      // Allow right-click on inputs and textareas so users can copy-paste their own typed content
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
         return;
       }
@@ -112,19 +190,17 @@ export default function App() {
     };
   }, [currentView]);
 
-  // Update projects list in state & localstorage
+  // Local storage synchronization helpers (used as fallback when Firebase is disabled)
   const updateProjectsInStorage = (updatedList) => {
     setProjects(updatedList);
     localStorage.setItem('kassel_projects', JSON.stringify(updatedList));
   };
 
-  // Update messages list in state & localstorage
   const updateMessagesInStorage = (updatedList) => {
     setMessages(updatedList);
     localStorage.setItem('kassel_messages', JSON.stringify(updatedList));
   };
 
-  // Update team list in state & localstorage
   const updateTeamInStorage = (updatedList) => {
     setTeam(updatedList);
     localStorage.setItem('kassel_team', JSON.stringify(updatedList));
@@ -153,73 +229,179 @@ export default function App() {
   };
 
   // CRUD for Projects
-  const addProject = (newProj) => {
-    const projWithId = {
-      ...newProj,
-      id: 'proj-' + Date.now()
-    };
-    const newList = [projWithId, ...projects];
-    updateProjectsInStorage(newList);
-  };
-
-  const editProject = (id, updatedProj) => {
-    const newList = projects.map(p => p.id === id ? { ...updatedProj, id } : p);
-    updateProjectsInStorage(newList);
-  };
-
-  const deleteProject = (id) => {
-    if (window.confirm('Are you sure you want to delete this case study?')) {
-      const newList = projects.filter(p => p.id !== id);
+  const addProject = async (newProj) => {
+    const projId = 'proj-' + Date.now();
+    const projectData = { ...newProj, id: projId };
+    
+    if (isFirebaseEnabled) {
+      try {
+        await setDoc(doc(db, 'projects', projId), projectData);
+      } catch (err) {
+        console.error('Error adding project to Firebase:', err);
+      }
+    } else {
+      const newList = [projectData, ...projects];
       updateProjectsInStorage(newList);
     }
   };
 
+  const editProject = async (id, updatedProj) => {
+    const projectData = { ...updatedProj, id };
+    
+    if (isFirebaseEnabled) {
+      try {
+        await setDoc(doc(db, 'projects', id), projectData);
+      } catch (err) {
+        console.error('Error updating project in Firebase:', err);
+      }
+    } else {
+      const newList = projects.map(p => p.id === id ? projectData : p);
+      updateProjectsInStorage(newList);
+    }
+  };
+
+  const deleteProject = async (id) => {
+    if (window.confirm('Are you sure you want to delete this case study?')) {
+      if (isFirebaseEnabled) {
+        try {
+          await deleteDoc(doc(db, 'projects', id));
+        } catch (err) {
+          console.error('Error deleting project from Firebase:', err);
+        }
+      } else {
+        const newList = projects.filter(p => p.id !== id);
+        updateProjectsInStorage(newList);
+      }
+    }
+  };
+
   // CRUD for Team Members
-  const addTeamMember = (newMember) => {
-    const memberWithId = {
-      ...newMember,
-      id: 'tm-' + Date.now()
-    };
-    const newList = [...team, memberWithId];
-    updateTeamInStorage(newList);
-  };
-
-  const editTeamMember = (id, updatedMember) => {
-    const newList = team.map(t => t.id === id ? { ...updatedMember, id } : t);
-    updateTeamInStorage(newList);
-  };
-
-  const deleteTeamMember = (id) => {
-    if (window.confirm('Are you sure you want to remove this staff member?')) {
-      const newList = team.filter(t => t.id !== id);
+  const addTeamMember = async (newMember) => {
+    const tmId = 'tm-' + Date.now();
+    const memberData = { ...newMember, id: tmId };
+    
+    if (isFirebaseEnabled) {
+      try {
+        await setDoc(doc(db, 'team', tmId), memberData);
+      } catch (err) {
+        console.error('Error adding team member to Firebase:', err);
+      }
+    } else {
+      const newList = [...team, memberData];
       updateTeamInStorage(newList);
     }
   };
 
-  // CRUD for Messages
-  const addMessage = (newMsg) => {
-    const newList = [newMsg, ...messages];
-    updateMessagesInStorage(newList);
+  const editTeamMember = async (id, updatedMember) => {
+    const memberData = { ...updatedMember, id };
+    
+    if (isFirebaseEnabled) {
+      try {
+        await setDoc(doc(db, 'team', id), memberData);
+      } catch (err) {
+        console.error('Error updating team member in Firebase:', err);
+      }
+    } else {
+      const newList = team.map(t => t.id === id ? memberData : t);
+      updateTeamInStorage(newList);
+    }
   };
 
-  const deleteMessage = (id) => {
-    if (window.confirm('Delete this message permanently?')) {
-      const newList = messages.filter(m => m.id !== id);
+  const deleteTeamMember = async (id) => {
+    if (window.confirm('Are you sure you want to remove this staff member?')) {
+      if (isFirebaseEnabled) {
+        try {
+          await deleteDoc(doc(db, 'team', id));
+        } catch (err) {
+          console.error('Error deleting team member from Firebase:', err);
+        }
+      } else {
+        const newList = team.filter(t => t.id !== id);
+        updateTeamInStorage(newList);
+      }
+    }
+  };
+
+  // CRUD for Messages
+  const addMessage = async (newMsg) => {
+    if (isFirebaseEnabled) {
+      try {
+        await setDoc(doc(db, 'messages', newMsg.id), newMsg);
+      } catch (err) {
+        console.error('Error adding message to Firebase:', err);
+      }
+    } else {
+      const newList = [newMsg, ...messages];
       updateMessagesInStorage(newList);
     }
   };
 
-  const markMessageRead = (id) => {
-    const newList = messages.map(m => m.id === id ? { ...m, read: true } : m);
-    updateMessagesInStorage(newList);
+  const deleteMessage = async (id) => {
+    if (window.confirm('Delete this message permanently?')) {
+      if (isFirebaseEnabled) {
+        try {
+          await deleteDoc(doc(db, 'messages', id));
+        } catch (err) {
+          console.error('Error deleting message from Firebase:', err);
+        }
+      } else {
+        const newList = messages.filter(m => m.id !== id);
+        updateMessagesInStorage(newList);
+      }
+    }
+  };
+
+  const markMessageRead = async (id) => {
+    const originalMsg = messages.find(m => m.id === id);
+    if (!originalMsg) return;
+    const updatedMsg = { ...originalMsg, read: true };
+    
+    if (isFirebaseEnabled) {
+      try {
+        await setDoc(doc(db, 'messages', id), updatedMsg);
+      } catch (err) {
+        console.error('Error updating message in Firebase:', err);
+      }
+    } else {
+      const newList = messages.map(m => m.id === id ? updatedMsg : m);
+      updateMessagesInStorage(newList);
+    }
   };
 
   // System Database Reset
-  const resetDatabase = () => {
-    localStorage.setItem('kassel_projects', JSON.stringify(initialProjects));
-    setProjects(initialProjects);
-    localStorage.setItem('kassel_team', JSON.stringify(initialTeam));
-    setTeam(initialTeam);
+  const resetDatabase = async () => {
+    if (isFirebaseEnabled) {
+      try {
+        // Reset Projects: delete existing and write initial
+        const projectsRef = collection(db, 'projects');
+        const projectsSnap = await getDocs(projectsRef);
+        for (const docItem of projectsSnap.docs) {
+          await deleteDoc(doc(db, 'projects', docItem.id));
+        }
+        for (const proj of initialProjects) {
+          await setDoc(doc(db, 'projects', proj.id), proj);
+        }
+
+        // Reset Team: delete existing and write initial
+        const teamRef = collection(db, 'team');
+        const teamSnap = await getDocs(teamRef);
+        for (const docItem of teamSnap.docs) {
+          await deleteDoc(doc(db, 'team', docItem.id));
+        }
+        for (const member of initialTeam) {
+          await setDoc(doc(db, 'team', member.id), member);
+        }
+
+        console.log('Database successfully reset to default values.');
+      } catch (err) {
+        console.error('Error resetting database in Firebase:', err);
+      }
+    } else {
+      localStorage.setItem('kassel_projects', JSON.stringify(initialProjects));
+      setProjects(initialProjects);
+      localStorage.setItem('kassel_team', JSON.stringify(initialTeam));
+      setTeam(initialTeam);
+    }
   };
 
   return (
