@@ -29,8 +29,10 @@ export default function QuickInquire({ addMessage, isToastActive }) {
     const cleanVal = inputValue.trim();
     if (!cleanVal) return;
 
+    const currentPromptName = formData.name ? formData.name.toLowerCase().replace(/\s+/g, '') : 'operator';
+
     // Add user message to log
-    setChatLog(prev => [...prev, { sender: 'user', text: cleanVal }]);
+    setChatLog(prev => [...prev, { sender: 'user', text: cleanVal, prompt: currentPromptName }]);
     setInputValue('');
 
     if (step === 0) {
@@ -79,7 +81,8 @@ export default function QuickInquire({ addMessage, isToastActive }) {
   };
 
   const handleCategorySelect = (category) => {
-    setChatLog(prev => [...prev, { sender: 'user', text: `Selected: ${category}` }]);
+    const currentPromptName = formData.name ? formData.name.toLowerCase().replace(/\s+/g, '') : 'operator';
+    setChatLog(prev => [...prev, { sender: 'user', text: `Selected: ${category}`, prompt: currentPromptName }]);
     setFormData(prev => ({ ...prev, subject: category }));
 
     let aiPrompt = '';
@@ -141,7 +144,7 @@ export default function QuickInquire({ addMessage, isToastActive }) {
                   {log.sender === 'bot' ? (
                     <span className="bot-prompt">&gt; {log.text}</span>
                   ) : (
-                    <span className="user-input-line">operator$ {log.text}</span>
+                    <span className="user-input-line">{log.prompt || 'operator'}$ {log.text}</span>
                   )}
                 </div>
               ))}
@@ -168,7 +171,9 @@ export default function QuickInquire({ addMessage, isToastActive }) {
 
             {step < 4 ? (
               <form onSubmit={handleSend} className="terminal-input-bar">
-                <span className="input-indicator">&gt;&gt;</span>
+                <span className="input-indicator" style={{ fontSize: '0.72rem', whiteSpace: 'nowrap' }}>
+                  {formData.name ? `${formData.name.toLowerCase().replace(/\s+/g, '')}$` : 'operator$'}
+                </span>
                 <input
                   type="text"
                   className="terminal-input"
