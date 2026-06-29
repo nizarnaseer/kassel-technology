@@ -3,10 +3,11 @@ import { MessageSquare, X, Terminal, CornerDownLeft } from 'lucide-react';
 
 export default function QuickInquire({ addMessage, isToastActive }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [step, setStep] = useState(0); // 0: Name, 1: Contact, 2: Message, 3: Completed
+  const [step, setStep] = useState(0); // 0: Name, 1: Contact, 2: Selection, 3: Message, 4: Completed
   const [formData, setFormData] = useState({
     name: '',
     contact: '',
+    subject: '',
     message: ''
   });
   const [inputValue, setInputValue] = useState('');
@@ -21,7 +22,7 @@ export default function QuickInquire({ addMessage, isToastActive }) {
     if (logEndRef.current) {
       logEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [chatLog, isOpen]);
+  }, [chatLog, isOpen, step]);
 
   const handleSend = (e) => {
     if (e) e.preventDefault();
@@ -45,10 +46,10 @@ export default function QuickInquire({ addMessage, isToastActive }) {
       setChatLog(prev => [
         ...prev,
         { sender: 'bot', text: 'Contact channel registered.' },
-        { sender: 'bot', text: 'Please detail your engineering inquiry or system breakdown below.' }
+        { sender: 'bot', text: 'Please select the category that best fits your inquiry below.' }
       ]);
       setStep(2);
-    } else if (step === 2) {
+    } else if (step === 3) {
       const finalMsg = cleanVal;
       setFormData(prev => ({ ...prev, message: finalMsg }));
 
@@ -59,7 +60,7 @@ export default function QuickInquire({ addMessage, isToastActive }) {
         email: formData.contact.includes('@') ? formData.contact : '',
         phone: !formData.contact.includes('@') ? formData.contact : '',
         company: 'Web Quick Link',
-        subject: 'Quick Callback Request',
+        subject: formData.subject || 'Quick Callback Request',
         message: finalMsg,
         date: new Date().toISOString(),
         read: false
@@ -73,13 +74,35 @@ export default function QuickInquire({ addMessage, isToastActive }) {
         { sender: 'bot', text: 'Secure transmission success! Connection established.' },
         { sender: 'bot', text: 'Kassel engineering response team has been paged. We will contact you shortly.' }
       ]);
-      setStep(3);
+      setStep(4);
     }
+  };
+
+  const handleCategorySelect = (category) => {
+    setChatLog(prev => [...prev, { sender: 'user', text: `Selected: ${category}` }]);
+    setFormData(prev => ({ ...prev, subject: category }));
+
+    let aiPrompt = '';
+    if (category === 'PLC / HMI Troubleshooting') {
+      aiPrompt = '[DIAG] PLC Module selected. We support Siemens, Beckhoff, Omron, Mitsubishi, and Allen-Bradley. Please enter your PLC model and describe the error or fault codes.';
+    } else if (category === 'SCADA & Data Integration') {
+      aiPrompt = '[DIAG] SCADA/Telemetry selected. We specialize in Ignition, WinCC, and Cloud IoT. Please describe your system architecture or data tracking requirements.';
+    } else if (category === 'Nationwide Consultation') {
+      aiPrompt = '[DIAG] Scoping selected. We cover Selangor, KL, Sabah, Sarawak and nationwide. What is your project location and approximate timeline?';
+    } else {
+      aiPrompt = '[DIAG] General Inquiry queue. Please detail how our engineering division can assist you.';
+    }
+
+    setChatLog(prev => [
+      ...prev,
+      { sender: 'bot', text: aiPrompt }
+    ]);
+    setStep(3);
   };
 
   const handleReset = () => {
     setStep(0);
-    setFormData({ name: '', contact: '', message: '' });
+    setFormData({ name: '', contact: '', subject: '', message: '' });
     setInputValue('');
     setChatLog([
       { sender: 'bot', text: 'Diagnostic link restarted.' },
@@ -122,10 +145,28 @@ export default function QuickInquire({ addMessage, isToastActive }) {
                   )}
                 </div>
               ))}
+
+              {step === 2 && (
+                <div className="terminal-options">
+                  <button type="button" onClick={() => handleCategorySelect('PLC / HMI Troubleshooting')} className="terminal-option-btn">
+                    [1] PLC / HMI Troubleshooting
+                  </button>
+                  <button type="button" onClick={() => handleCategorySelect('SCADA & Data Integration')} className="terminal-option-btn">
+                    [2] SCADA & Data Integration
+                  </button>
+                  <button type="button" onClick={() => handleCategorySelect('Nationwide Consultation')} className="terminal-option-btn">
+                    [3] Project Scoping & Consulting
+                  </button>
+                  <button type="button" onClick={() => handleCategorySelect('General Callback')} className="terminal-option-btn">
+                    [4] General Callback Request
+                  </button>
+                </div>
+              )}
+
               <div ref={logEndRef} />
             </div>
 
-            {step < 3 ? (
+            {step < 4 ? (
               <form onSubmit={handleSend} className="terminal-input-bar">
                 <span className="input-indicator">&gt;&gt;</span>
                 <input
@@ -134,13 +175,15 @@ export default function QuickInquire({ addMessage, isToastActive }) {
                   placeholder={
                     step === 0 ? "Enter your name..." : 
                     step === 1 ? "Enter phone / email..." : 
-                    "Describe your system requirement..."
+                    step === 2 ? "Click a selection option above..." :
+                    "Type description and hit Enter..."
                   }
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
+                  disabled={step === 2}
                   autoFocus
                 />
-                <button type="submit" className="terminal-send-btn">
+                <button type="submit" className="terminal-send-btn" disabled={step === 2}>
                   <CornerDownLeft size={14} />
                 </button>
               </form>
@@ -162,6 +205,40 @@ export default function QuickInquire({ addMessage, isToastActive }) {
           right: 30px;
           z-index: 999;
           transition: bottom 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Option selection styles */
+        .terminal-options {
+          display: flex;
+          flex-direction: column;
+          gap: 0.4rem;
+          margin-top: 0.65rem;
+          margin-bottom: 0.65rem;
+          animation: fade-in-options 0.3s ease-out forwards;
+        }
+
+        @keyframes fade-in-options {
+          from { opacity: 0; transform: translateY(5px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        .terminal-option-btn {
+          background: rgba(6, 182, 212, 0.04);
+          border: 1px solid rgba(6, 182, 212, 0.2);
+          color: var(--accent-cyan);
+          font-family: monospace;
+          font-size: 0.72rem;
+          padding: 0.4rem 0.65rem;
+          border-radius: 4px;
+          cursor: pointer;
+          text-align: left;
+          transition: background 0.2s, border-color 0.2s, color 0.2s;
+        }
+
+        .terminal-option-btn:hover {
+          background: rgba(6, 182, 212, 0.15);
+          border-color: var(--accent-cyan);
+          color: var(--text-primary);
         }
 
         .chat-bubble-btn {

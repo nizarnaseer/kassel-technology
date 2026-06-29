@@ -948,7 +948,9 @@ export default function Admin({
                     >
                       <div className="msg-item-top">
                         <span className="msg-sender-name">{msg.name}</span>
-                        <span className="msg-date-badge">{new Date(msg.date).toLocaleDateString()}</span>
+                        <span className="msg-date-badge">
+                          {new Date(msg.date).toLocaleDateString()} {new Date(msg.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </span>
                       </div>
                       <span className="msg-sender-company text-muted">{msg.company || 'Private Inquiry'}</span>
                       <h5 className="msg-subject-line">{msg.subject}</h5>
