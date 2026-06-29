@@ -35,9 +35,13 @@ export default function Projects({ projects }) {
       </div>
 
       {/* Projects Grid */}
-      <div className="projects-grid">
-        {filteredProjects.map((p) => (
-          <div key={p.id} className="project-card glass-card">
+      <div className="projects-grid" key={filter}>
+        {filteredProjects.map((p, idx) => (
+          <div 
+            key={p.id} 
+            className="project-card glass-card"
+            style={{ animationDelay: `${idx * 80}ms` }}
+          >
             <div className="project-img-wrapper">
               <img src={p.image} alt={p.title} className="project-img" />
               <div className="project-category-overlay">{p.category}</div>
@@ -253,6 +257,19 @@ export default function Projects({ projects }) {
           display: flex;
           flex-direction: column;
           height: 100%;
+          opacity: 0;
+          animation: cardEntrance 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes cardEntrance {
+          0% {
+            opacity: 0;
+            transform: translateY(20px) scale(0.97);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
         }
 
         .project-img-wrapper {

@@ -8,6 +8,7 @@ import Projects from './components/Projects';
 import Contact from './components/Contact';
 import Admin from './components/Admin';
 import { initialProjects } from './data/initialProjects';
+import QuickInquire from './components/QuickInquire';
 import { initialTeam } from './data/initialTeam';
 import { db, isFirebaseEnabled } from './firebase';
 import { collection, onSnapshot, doc, setDoc, deleteDoc, getDocs } from 'firebase/firestore';
@@ -507,6 +508,10 @@ export default function App() {
       )}
 
       <Footer setCurrentView={handleViewChange} />
+
+      {currentView === 'home' && (
+        <QuickInquire addMessage={addMessage} isToastActive={!!activeToast} />
+      )}
 
       {/* Real-time Holographic Toast Alert */}
       {activeToast && (

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Lock, Unlock, LogOut, FilePlus, Eye, Trash2, CheckCircle2, RotateCcw, AlertTriangle, FileText, Mail, BarChart3, Edit, Upload, Users } from 'lucide-react';
+import { Lock, Unlock, LogOut, FilePlus, Eye, Trash2, CheckCircle2, RotateCcw, AlertTriangle, FileText, Mail, BarChart3, Edit, Upload, Users, Sliders } from 'lucide-react';
 
 export default function Admin({
   projects,
@@ -64,6 +64,77 @@ export default function Admin({
     level: 3
   });
 
+  // Load drafts on mount
+  React.useEffect(() => {
+    const savedProjectDraft = localStorage.getItem('kassel_project_draft');
+    if (savedProjectDraft) {
+      try {
+        const parsed = JSON.parse(savedProjectDraft);
+        setProjectForm({
+          title: parsed.title || '',
+          client: parsed.client || '',
+          category: parsed.category || 'PLC & HMI Retrofit',
+          date: parsed.date || '',
+          technologies: parsed.technologies || '',
+          description: parsed.description || '',
+          overview: parsed.overview || '',
+          beforeSpec: parsed.beforeSpec || '',
+          afterSpec: parsed.afterSpec || '',
+          scopeOfWork: parsed.scopeOfWork || '',
+          features: parsed.features || '',
+          outcomes: parsed.outcomes || '',
+          image: parsed.image || '/assets/projects/pumphouse.jpg'
+        });
+        setIsEditing(parsed.isEditing || false);
+        setEditProjectId(parsed.editProjectId || null);
+        setImagePreview(parsed.imagePreview || null);
+        setFormOpen(true);
+      } catch (e) {
+        console.error('Failed to restore project draft:', e);
+      }
+    }
+
+    const savedTeamDraft = localStorage.getItem('kassel_team_draft');
+    if (savedTeamDraft) {
+      try {
+        const parsed = JSON.parse(savedTeamDraft);
+        setProjectTeamForm({
+          name: parsed.name || '',
+          role: parsed.role || '',
+          bio: parsed.bio || '',
+          level: parsed.level || 3
+        });
+        setIsEditingTeam(parsed.isEditingTeam || false);
+        setEditTeamMemberId(parsed.editTeamMemberId || null);
+        setTeamFormOpen(true);
+      } catch (e) {
+        console.error('Failed to restore team draft:', e);
+      }
+    }
+  }, []);
+
+  // Save drafts on change
+  React.useEffect(() => {
+    if (formOpen) {
+      localStorage.setItem('kassel_project_draft', JSON.stringify({
+        ...projectForm,
+        isEditing,
+        editProjectId,
+        imagePreview
+      }));
+    }
+  }, [projectForm, formOpen, isEditing, editProjectId, imagePreview]);
+
+  React.useEffect(() => {
+    if (teamFormOpen) {
+      localStorage.setItem('kassel_team_draft', JSON.stringify({
+        ...teamForm,
+        isEditingTeam,
+        editTeamMemberId
+      }));
+    }
+  }, [teamForm, teamFormOpen, isEditingTeam, editTeamMemberId]);
+
   const openAddTeamForm = () => {
     setProjectTeamForm({
       name: '',
@@ -108,6 +179,7 @@ export default function Admin({
     }
 
     setTeamFormOpen(false);
+    localStorage.removeItem('kassel_team_draft');
   };
 
   const onSubmitLogin = (e) => {
@@ -231,6 +303,7 @@ export default function Admin({
     }
 
     setFormOpen(false);
+    localStorage.removeItem('kassel_project_draft');
   };
 
   const handleMsgClick = (msg) => {
@@ -374,6 +447,63 @@ export default function Admin({
   // Admin Dashboard view
   const unreadMessagesCount = messages.filter(m => !m.read).length;
 
+  // Get inquiry count for the last 7 days
+  const getDailyMessageStats = () => {
+    const stats = [];
+    const now = new Date();
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(now.getDate() - i);
+      const dateStr = d.toISOString().split('T')[0];
+      const label = d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+      stats.push({ dateStr, label, count: 0 });
+    }
+    messages.forEach(msg => {
+      if (msg.date) {
+        const msgDateStr = new Date(msg.date).toISOString().split('T')[0];
+        const dayStat = stats.find(s => s.dateStr === msgDateStr);
+        if (dayStat) {
+          dayStat.count += 1;
+        }
+      }
+    });
+    return stats;
+  };
+
+  const dailyStats = getDailyMessageStats();
+  const maxCount = Math.max(...dailyStats.map(s => s.count), 4);
+  const width = 600;
+  const height = 220;
+  const paddingX = 40;
+  const paddingY = 30;
+
+  const points = dailyStats.map((stat, index) => {
+    const x = paddingX + (index * (width - 2 * paddingX)) / 6;
+    const y = height - paddingY - (stat.count * (height - 2 * paddingY)) / maxCount;
+    return { x, y, label: stat.label, count: stat.count };
+  });
+
+  const linePath = points.map((p, idx) => `${idx === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
+  const fillPath = `${linePath} L ${points[points.length - 1].x} ${height - paddingY} L ${points[0].x} ${height - paddingY} Z`;
+
+  const totalInquiries = messages.length;
+  const readInquiries = messages.filter(m => m.read).length;
+  const responseRate = totalInquiries > 0 ? Math.round((readInquiries / totalInquiries) * 100) : 100;
+  
+  const busiestDay = () => {
+    if (totalInquiries === 0) return 'N/A';
+    const dayCounts = [0,0,0,0,0,0,0];
+    messages.forEach(m => {
+      if (m.date) {
+        const d = new Date(m.date).getDay();
+        dayCounts[d]++;
+      }
+    });
+    const maxIdx = dayCounts.indexOf(Math.max(...dayCounts));
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    return dayNames[maxIdx];
+  };
+
   return (
     <section className="admin-section console-view">
       <div className="bg-glow-dot-1"></div>
@@ -418,10 +548,18 @@ export default function Admin({
             </button>
 
             <button 
+              className={`sidebar-nav-item ${activeTab === 'analytics' ? 'active' : ''}`}
+              onClick={() => { setActiveTab('analytics'); setFormOpen(false); }}
+            >
+              <BarChart3 size={18} />
+              <span>Inquiry Analytics</span>
+            </button>
+
+            <button 
               className={`sidebar-nav-item ${activeTab === 'settings' ? 'active' : ''}`}
               onClick={() => { setActiveTab('settings'); setFormOpen(false); }}
             >
-              <BarChart3 size={18} />
+              <Sliders size={18} />
               <span>Console Settings</span>
             </button>
           </div>
@@ -455,7 +593,7 @@ export default function Admin({
                 <div className="form-container-card glass-card animated">
                   <div className="form-header-bar">
                     <h3 className="form-title text-cyan">{isEditing ? 'Modify Case Study' : 'Publish New Case Study'}</h3>
-                    <button onClick={() => setFormOpen(false)} className="btn-close-form">&times;</button>
+                    <button onClick={() => { setFormOpen(false); localStorage.removeItem('kassel_project_draft'); }} className="btn-close-form">&times;</button>
                   </div>
 
                   <form onSubmit={handleFormSubmit} className="project-editor-form">
@@ -630,7 +768,7 @@ export default function Admin({
                       <button type="submit" className="btn-primary">
                         <span>Save Case Study</span>
                       </button>
-                      <button type="button" onClick={() => setFormOpen(false)} className="btn-secondary">
+                      <button type="button" onClick={() => { setFormOpen(false); localStorage.removeItem('kassel_project_draft'); }} className="btn-secondary">
                         <span>Cancel</span>
                       </button>
                     </div>
@@ -688,7 +826,7 @@ export default function Admin({
                 <div className="form-container-card glass-card animated">
                   <div className="form-header-bar">
                     <h3 className="form-title text-cyan">{isEditingTeam ? 'Modify Staff Member' : 'Add New Staff Member'}</h3>
-                    <button onClick={() => setTeamFormOpen(false)} className="btn-close-form">&times;</button>
+                    <button onClick={() => { setTeamFormOpen(false); localStorage.removeItem('kassel_team_draft'); }} className="btn-close-form">&times;</button>
                   </div>
 
                   <form onSubmit={handleTeamFormSubmit} className="project-editor-form">
@@ -748,7 +886,7 @@ export default function Admin({
                       <button type="submit" className="btn-primary">
                         <span>Save Personnel Settings</span>
                       </button>
-                      <button type="button" onClick={() => setTeamFormOpen(false)} className="btn-secondary">
+                      <button type="button" onClick={() => { setTeamFormOpen(false); localStorage.removeItem('kassel_team_draft'); }} className="btn-secondary">
                         <span>Cancel</span>
                       </button>
                     </div>
@@ -874,6 +1012,82 @@ export default function Admin({
                       <p className="text-muted">Select an inquiry from the inbox sidebar to view full details.</p>
                     </div>
                   )}
+                </div>
+
+              </div>
+            </div>
+          )}
+
+          {/* Analytics Tab */}
+          {activeTab === 'analytics' && (
+            <div className="tab-pane analytics-tab animated">
+              <div className="workspace-header">
+                <div>
+                  <h2 className="workspace-title">Inquiry Analytics Dashboard</h2>
+                  <p className="workspace-desc">Real-time statistics on customer inquiries and communication trends.</p>
+                </div>
+              </div>
+
+              <div className="analytics-grid">
+                
+                {/* SVG Chart */}
+                <div className="analytics-card glass-card chart-container">
+                  <h3 className="widget-title">7-Day Inquiry Volume</h3>
+                  <div className="chart-wrapper">
+                    <svg viewBox={`0 0 ${width} ${height}`} className="analytics-svg" width="100%" height="100%">
+                      <line x1={paddingX} y1={height - paddingY} x2={width - paddingX} y2={height - paddingY} stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
+                      <line x1={paddingX} y1={paddingY} x2={paddingX} y2={height - paddingY} stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
+                      
+                      {[0, 0.25, 0.5, 0.75, 1].map((ratio, idx) => {
+                        const y = paddingY + ratio * (height - 2 * paddingY);
+                        const val = Math.round(maxCount - ratio * maxCount);
+                        return (
+                          <g key={idx}>
+                            <line x1={paddingX} y1={y} x2={width - paddingX} y2={y} stroke="rgba(255,255,255,0.03)" strokeDasharray="4,4" />
+                            <text x={paddingX - 10} y={y + 4} fill="var(--text-muted)" fontSize="9" textAnchor="end">{val}</text>
+                          </g>
+                        );
+                      })}
+
+                      <path d={fillPath} fill="url(#chartGrad)" />
+                      <path d={linePath} fill="none" stroke="var(--accent-cyan)" strokeWidth="2.5" className="glow-stroke-cyan" />
+
+                      {points.map((p, idx) => (
+                        <g key={idx} className="chart-point-group">
+                          <circle cx={p.x} cy={p.y} r="4" fill="var(--accent-cyan)" stroke="var(--bg-primary)" strokeWidth="1.5" />
+                          <text x={p.x} y={p.y - 10} fill="var(--accent-cyan)" fontSize="9" fontWeight="bold" textAnchor="middle">{p.count}</text>
+                          <text x={p.x} y={height - paddingY + 16} fill="var(--text-secondary)" fontSize="9" textAnchor="middle">{p.label}</text>
+                        </g>
+                      ))}
+
+                      <defs>
+                        <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="var(--accent-cyan)" stopOpacity="0.2" />
+                          <stop offset="100%" stopColor="var(--accent-cyan)" stopOpacity="0.0" />
+                        </linearGradient>
+                      </defs>
+                    </svg>
+                  </div>
+                </div>
+
+                {/* Metrics Sidebar */}
+                <div className="analytics-metrics-sidebar">
+                  <div className="metric-box-small glass-card">
+                    <span className="metric-val">{totalInquiries}</span>
+                    <span className="metric-label">Total Inquiries</span>
+                  </div>
+                  <div className="metric-box-small glass-card">
+                    <span className="metric-val text-cyan">{unreadMessagesCount}</span>
+                    <span className="metric-label">Pending Review</span>
+                  </div>
+                  <div className="metric-box-small glass-card">
+                    <span className="metric-val text-amber">{responseRate}%</span>
+                    <span className="metric-label">Read / Review Rate</span>
+                  </div>
+                  <div className="metric-box-small glass-card">
+                    <span className="metric-val text-cyan">{busiestDay()}</span>
+                    <span className="metric-label">Peak Activity Day</span>
+                  </div>
                 </div>
 
               </div>
@@ -1613,6 +1827,77 @@ export default function Admin({
           .project-admin-row {
             flex-direction: column;
             text-align: center;
+          }
+        }
+
+        /* Analytics Tab Styles */
+        .analytics-grid {
+          display: grid;
+          grid-template-columns: 1fr 240px;
+          gap: 1.5rem;
+          margin-top: 1.5rem;
+        }
+
+        .analytics-card {
+          padding: 1.5rem;
+          display: flex;
+          flex-direction: column;
+          gap: 1.25rem;
+          min-height: 300px;
+        }
+
+        .chart-wrapper {
+          flex: 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .analytics-svg {
+          overflow: visible;
+        }
+
+        .analytics-metrics-sidebar {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+        }
+
+        .metric-box-small {
+          padding: 1rem 1.25rem;
+          display: flex;
+          flex-direction: column;
+          gap: 0.15rem;
+        }
+
+        .metric-box-small .metric-val {
+          font-size: 1.5rem;
+          font-weight: 700;
+          font-family: var(--font-heading);
+        }
+
+        .metric-box-small .metric-label {
+          font-size: 0.75rem;
+          color: var(--text-secondary);
+          text-transform: uppercase;
+          font-weight: 600;
+          letter-spacing: 0.02em;
+        }
+
+        @media (max-width: 900px) {
+          .analytics-grid {
+            grid-template-columns: 1fr;
+          }
+          .analytics-metrics-sidebar {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+          }
+        }
+
+        @media (max-width: 500px) {
+          .analytics-metrics-sidebar {
+            grid-template-columns: 1fr;
           }
         }
       `}</style>
