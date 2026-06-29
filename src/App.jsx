@@ -18,6 +18,7 @@ export default function App() {
   const [messages, setMessages] = useState([]);
   const [team, setTeam] = useState([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [activeToast, setActiveToast] = useState(null);
 
   // Initialize Routing & Handle Path Routing
   useEffect(() => {
@@ -189,6 +190,50 @@ export default function App() {
       revealElements.forEach((el) => observer.unobserve(el));
     };
   }, [currentView]);
+
+  // Synthesize a high-tech notification chime in code to avoid loading mp3 files
+  const playNotificationSound = () => {
+    try {
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const playNote = (freq, startTime, duration) => {
+        const osc = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, startTime);
+        gainNode.gain.setValueAtTime(0.06, startTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+        osc.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        osc.start(startTime);
+        osc.stop(startTime + duration);
+      };
+      const now = audioCtx.currentTime;
+      playNote(523.25, now, 0.25); // C5
+      playNote(659.25, now + 0.12, 0.35); // E5
+    } catch (err) {
+      console.warn('AudioContext chime blocked by browser autoplay rules:', err);
+    }
+  };
+
+  // Monitor new messages for Toast Notifications
+  useEffect(() => {
+    if (messages.length === 0 || !isLoggedIn) return;
+
+    const latestMsg = messages[0];
+    const msgTime = new Date(latestMsg.date).getTime();
+    const nowTime = Date.now();
+    const isRecent = (nowTime - msgTime) < 15000;
+
+    if (!latestMsg.read && isRecent && (!activeToast || activeToast.id !== latestMsg.id)) {
+      setActiveToast({
+        id: latestMsg.id,
+        sender: latestMsg.name,
+        subject: latestMsg.subject,
+        message: latestMsg.message
+      });
+      playNotificationSound();
+    }
+  }, [messages, isLoggedIn, activeToast]);
 
   // Local storage synchronization helpers (used as fallback when Firebase is disabled)
   const updateProjectsInStorage = (updatedList) => {
@@ -457,6 +502,22 @@ export default function App() {
 
       <Footer setCurrentView={handleViewChange} />
 
+      {/* Real-time Holographic Toast Alert */}
+      {activeToast && (
+        <div className="toast-notification glass-card" onClick={() => { handleViewChange('admin'); setActiveToast(null); }}>
+          <div className="toast-header" onClick={(e) => e.stopPropagation()}>
+            <span className="toast-indicator pulse"></span>
+            <span className="toast-title">New Message Received</span>
+            <button className="toast-close-btn" onClick={() => setActiveToast(null)}>×</button>
+          </div>
+          <div className="toast-body">
+            <p className="toast-sender"><strong>From:</strong> {activeToast.sender}</p>
+            <p className="toast-subject"><strong>Subject:</strong> {activeToast.subject}</p>
+            <p className="toast-desc">{activeToast.message.length > 55 ? activeToast.message.substring(0, 52) + '...' : activeToast.message}</p>
+          </div>
+        </div>
+      )}
+
       <style>{`
         .app-root-container {
           min-height: 100vh;
@@ -470,6 +531,99 @@ export default function App() {
 
         .main-content-layout {
           flex: 1;
+        }
+
+        /* Toast Notification Styling */
+        .toast-notification {
+          position: fixed;
+          bottom: 30px;
+          right: 30px;
+          width: 320px;
+          padding: 1.25rem;
+          border-radius: var(--border-radius);
+          box-shadow: 0 10px 40px rgba(0,0,0,0.5), var(--glow-cyan);
+          border: 1px solid rgba(6, 182, 212, 0.4);
+          z-index: 9999;
+          animation: slide-in-toast 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          background: rgba(8, 12, 20, 0.9);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          cursor: pointer;
+        }
+
+        @keyframes slide-in-toast {
+          0% { transform: translateY(50px); opacity: 0; }
+          100% { transform: translateY(0); opacity: 1; }
+        }
+
+        .toast-header {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          margin-bottom: 0.75rem;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+          padding-bottom: 0.5rem;
+        }
+
+        .toast-indicator {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: var(--accent-cyan);
+          box-shadow: 0 0 8px var(--accent-cyan);
+        }
+
+        .toast-indicator.pulse {
+          animation: toast-blink 1.2s infinite;
+        }
+
+        @keyframes toast-blink {
+          0%, 100% { opacity: 0.4; }
+          50% { opacity: 1; }
+        }
+
+        .toast-title {
+          font-size: 0.75rem;
+          font-weight: 700;
+          letter-spacing: 0.05em;
+          text-transform: uppercase;
+          color: var(--accent-cyan);
+          flex-grow: 1;
+        }
+
+        .toast-close-btn {
+          background: none;
+          border: none;
+          color: var(--text-secondary);
+          font-size: 1.2rem;
+          cursor: pointer;
+          line-height: 1;
+          padding: 0 4px;
+        }
+
+        .toast-close-btn:hover {
+          color: var(--text-primary);
+        }
+
+        .toast-body {
+          font-size: 0.85rem;
+          display: flex;
+          flex-direction: column;
+          gap: 0.25rem;
+        }
+
+        .toast-sender, .toast-subject {
+          color: var(--text-primary);
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .toast-desc {
+          color: var(--text-secondary);
+          margin-top: 0.25rem;
+          font-size: 0.8rem;
+          line-height: 1.4;
         }
       `}</style>
     </div>
