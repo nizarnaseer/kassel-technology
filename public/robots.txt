@@ -5,4 +5,4 @@ User-agent: *
 Allow: /
 Disallow: /admin
 
-Sitemap: https://kasseltech.com/sitemap.xml
+Sitemap: https://www.kasseltech.com/sitemap.xml
