@@ -218,7 +218,32 @@ export default function Services() {
             </div>
           </div>
         )}
+      </div>
 
+      {/* Service Coverage Area Grid */}
+      <div className="coverage-container glass-card">
+        <h3 className="coverage-title text-cyan">Service Coverage & Local Support Areas</h3>
+        <p className="coverage-desc text-muted">
+          Kassel Technology provides on-site industrial support, engineering deployments, and emergency breakdown response teams across Malaysia:
+        </p>
+        <div className="coverage-grid">
+          <div className="coverage-region">
+            <h4 className="region-name text-cyan">Selangor & Kuala Lumpur (Central Hub)</h4>
+            <p className="region-list">Ampang, Shah Alam, Klang, Petaling Jaya, Subang Jaya, Puchong, Rawang, Kajang, Seri Kembangan, Cyberjaya, Cheras, Kepong, Sentul.</p>
+          </div>
+          <div className="coverage-region">
+            <h4 className="region-name text-cyan">Sabah (East Malaysia Support)</h4>
+            <p className="region-list">Kota Kinabalu, Sandakan, Tawau, Lahad Datu, Beaufort, Ranau, Keningau, Tuaran, Penampang.</p>
+          </div>
+          <div className="coverage-region">
+            <h4 className="region-name text-cyan">Sarawak (East Malaysia Support)</h4>
+            <p className="region-list">Kuching, Sibu, Miri, Bintulu, Samalaju Industrial Park, Samarahan, Sarikei, Mukah.</p>
+          </div>
+          <div className="coverage-region">
+            <h4 className="region-name text-cyan">Other Regions Served</h4>
+            <p className="region-list">Johor (Pasir Gudang, Johor Bahru), Penang (Bayan Lepas, Butterworth), Perak (Ipoh), Melaka, Negeri Sembilan (Seremban).</p>
+          </div>
+        </div>
       </div>
 
       <style>{`
@@ -497,6 +522,51 @@ export default function Services() {
           .panel-content-grid {
             grid-template-columns: 1fr;
             gap: 2rem;
+          }
+        }
+
+        /* Coverage Area Styles */
+        .coverage-container {
+          margin-top: 4rem;
+          padding: 2.25rem 2rem;
+          border: 1px solid rgba(6, 182, 212, 0.15);
+        }
+
+        .coverage-title {
+          font-size: 1.25rem;
+          font-family: var(--font-heading);
+          margin-bottom: 0.5rem;
+        }
+
+        .coverage-desc {
+          font-size: 0.9rem;
+          margin-bottom: 2rem;
+          line-height: 1.5;
+        }
+
+        .coverage-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 2rem;
+        }
+
+        .region-name {
+          font-size: 0.95rem;
+          font-weight: 700;
+          margin-bottom: 0.5rem;
+          letter-spacing: 0.02em;
+        }
+
+        .region-list {
+          font-size: 0.85rem;
+          color: var(--text-secondary);
+          line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+          .coverage-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
           }
         }
       `}</style>
