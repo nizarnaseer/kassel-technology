@@ -28,7 +28,7 @@ export const initialProjects = [
       "Increased production flexibility, allowing operators to change jar profiles in under a minute",
       "Smoother mechanical transition leading to 30% less product breakage during palletizing"
     ],
-    image: "/assets/projects/palletizing.jpg"
+    image: "/assets/projects/palletizing.webp"
   },
   {
     id: "proj-2",
@@ -59,7 +59,7 @@ export const initialProjects = [
       "Increased operator safety through modern digital safety interlocks and screen warnings",
       "Extensible system architecture allowing future conveyor belts to be added easily"
     ],
-    image: "/assets/projects/compactor.jpg"
+    image: "/assets/projects/compactor.webp"
   },
   {
     id: "proj-3",
@@ -90,7 +90,7 @@ export const initialProjects = [
       "Reduced pump wear by equalizing runtime hours across all 4 pumps",
       "Zero flood incidents reported during high-tide windows due to automated priority scaling"
     ],
-    image: "/assets/projects/pumphouse.jpg"
+    image: "/assets/projects/pumphouse.webp"
   },
   {
     id: "proj-4",
@@ -121,6 +121,6 @@ export const initialProjects = [
       "Allowed seamless battery health monitoring on central SCADA screens",
       "Successfully deployed 50+ units across battery rooms with zero communication errors"
     ],
-    image: "/assets/projects/modbus.jpg"
+    image: "/assets/projects/modbus.webp"
   }
 ];

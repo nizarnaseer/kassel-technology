@@ -112,7 +112,11 @@ export default function App() {
       const unsubProjects = onSnapshot(collection(db, 'projects'), (snapshot) => {
         const projs = [];
         snapshot.forEach((doc) => {
-          projs.push({ id: doc.id, ...doc.data() });
+          const data = doc.data();
+          if (data.image && data.image.endsWith('.jpg') && data.image.includes('/assets/projects/')) {
+            data.image = data.image.replace('.jpg', '.webp');
+          }
+          projs.push({ id: doc.id, ...data });
         });
         setProjects(projs);
       });
