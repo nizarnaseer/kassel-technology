@@ -1,0 +1,16 @@
+# Kassel Technology
+
+> Malaysia's rising industrial automation and control systems integration partner. Specializing in high-efficiency PLC, HMI, SCADA programming, control panel design, and 24/7 emergency breakdown diagnostics.
+
+## Services
+
+- **PLC, HMI, & SCADA Design**: Custom programming and control system architecture using Siemens TIA Portal, Allen Bradley Studio 5000, Mitsubishi GX Works, and Omron CX-One/Sysmac Studio.
+- **Control Panel Wiring**: Custom cabinet design and electrical panel fabrication for SPM machines, conveyor networks, and pump house systems.
+- **Breakdown & Troubleshooting**: 24/7 rapid response diagnostics for factory machinery, automation lines, and PLC controller faults across Malaysia.
+- **Technical Trainings**: Practical-oriented corporate training courses for PLC programming and HMI configuration.
+
+## Contact & Support
+
+- **Website**: [Kassel Technology Homepage](https://www.kasseltech.com)
+- **Phone**: +6014-4003060
+- **Locations Served**: Selangor, Kuala Lumpur, Sabah, Sarawak, and nationwide.
