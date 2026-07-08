@@ -104,7 +104,7 @@ export default function Services() {
                   </div>
                   <div className="tab-text-box">
                     <span className="tab-badge">{service.badge}</span>
-                    <h4 className="tab-title">{service.title}</h4>
+                    <h3 className="tab-title">{service.title}</h3>
                   </div>
                   <ChevronRight size={18} className="tab-chevron" />
                 </div>
@@ -125,7 +125,7 @@ export default function Services() {
                     <div className="panel-content-grid">
                       
                       <div className="panel-list-section">
-                        <h4 className="panel-section-title">Capabilities & Scope</h4>
+                        <h3 className="panel-section-title">Capabilities & Scope</h3>
                         <ul className="capabilities-ul">
                           {service.details.map((detail, dIdx) => (
                             <li key={dIdx}>
@@ -137,7 +137,7 @@ export default function Services() {
                       </div>
 
                       <div className="panel-tech-section">
-                        <h4 className="panel-section-title">Systems & Platforms</h4>
+                        <h3 className="panel-section-title">Systems & Platforms</h3>
                         <div className="platforms-container">
                           {service.platforms.map((platform, pIdx) => (
                             <div key={pIdx} className="platform-row">
@@ -182,7 +182,7 @@ export default function Services() {
             <div className="panel-content-grid">
               
               <div className="panel-list-section">
-                <h4 className="panel-section-title">Capabilities & Scope</h4>
+                <h3 className="panel-section-title">Capabilities & Scope</h3>
                 <ul className="capabilities-ul">
                   {servicesData[activeTab].details.map((detail, dIdx) => (
                     <li key={dIdx}>
@@ -194,7 +194,7 @@ export default function Services() {
               </div>
 
               <div className="panel-tech-section">
-                <h4 className="panel-section-title">Systems & Platforms</h4>
+                <h3 className="panel-section-title">Systems & Platforms</h3>
                 <div className="platforms-container">
                   {servicesData[activeTab].platforms.map((platform, pIdx) => (
                     <div key={pIdx} className="platform-row">
@@ -228,19 +228,19 @@ export default function Services() {
         </p>
         <div className="coverage-grid">
           <div className="coverage-region">
-            <h4 className="region-name text-cyan">Selangor & Kuala Lumpur (Central Hub)</h4>
+            <h3 className="region-name text-cyan">Selangor & Kuala Lumpur (Central Hub)</h3>
             <p className="region-list">Ampang, Shah Alam, Klang, Petaling Jaya, Subang Jaya, Puchong, Rawang, Kajang, Seri Kembangan, Cyberjaya, Cheras, Kepong, Sentul.</p>
           </div>
           <div className="coverage-region">
-            <h4 className="region-name text-cyan">Sabah (East Malaysia Support)</h4>
+            <h3 className="region-name text-cyan">Sabah (East Malaysia Support)</h3>
             <p className="region-list">Kota Kinabalu, Sandakan, Tawau, Lahad Datu, Beaufort, Ranau, Keningau, Tuaran, Penampang.</p>
           </div>
           <div className="coverage-region">
-            <h4 className="region-name text-cyan">Sarawak (East Malaysia Support)</h4>
+            <h3 className="region-name text-cyan">Sarawak (East Malaysia Support)</h3>
             <p className="region-list">Kuching, Sibu, Miri, Bintulu, Samalaju Industrial Park, Samarahan, Sarikei, Mukah.</p>
           </div>
           <div className="coverage-region">
-            <h4 className="region-name text-cyan">Other Regions Served</h4>
+            <h3 className="region-name text-cyan">Other Regions Served</h3>
             <p className="region-list">Johor (Pasir Gudang, Johor Bahru), Penang (Bayan Lepas, Butterworth), Perak (Ipoh), Melaka, Negeri Sembilan (Seremban).</p>
           </div>
         </div>

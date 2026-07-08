@@ -135,7 +135,7 @@ export default function Projects({ projects }) {
                   {/* Before & After retrofits */}
                   {(activeProject.beforeSpec || activeProject.afterSpec) && (
                     <div className="retrofit-comparison-box">
-                      <h4 className="modal-section-title">Retrofit Transition Details</h4>
+                      <h3 className="modal-section-title">Retrofit Transition Details</h3>
                       <div className="comparison-cols">
                         <div className="comparison-card before">
                           <span className="comparison-badge before">Before Retrofit</span>
@@ -156,10 +156,10 @@ export default function Projects({ projects }) {
 
                   {activeProject.scopeOfWork && activeProject.scopeOfWork.length > 0 && (
                     <div className="modal-list-section">
-                      <h4 className="modal-section-title">
+                      <h3 className="modal-section-title">
                         <ClipboardList size={16} className="text-cyan" />
                         <span>Scope of Work</span>
-                      </h4>
+                      </h3>
                       <ul className="modal-bullets">
                         {activeProject.scopeOfWork.map((item, idx) => (
                           <li key={idx}>
@@ -173,10 +173,10 @@ export default function Projects({ projects }) {
 
                   {activeProject.features && activeProject.features.length > 0 && (
                     <div className="modal-list-section">
-                      <h4 className="modal-section-title">
+                      <h3 className="modal-section-title">
                         <Cpu size={16} className="text-cyan" />
                         <span>Core Features Implemented</span>
-                      </h4>
+                      </h3>
                       <ul className="modal-bullets">
                         {activeProject.features.map((item, idx) => (
                           <li key={idx}>
@@ -190,10 +190,10 @@ export default function Projects({ projects }) {
 
                   {activeProject.outcomes && activeProject.outcomes.length > 0 && (
                     <div className="modal-list-section">
-                      <h4 className="modal-section-title">
+                      <h3 className="modal-section-title">
                         <CheckCircle2 size={16} className="text-amber" />
                         <span>Project Outcomes</span>
-                      </h4>
+                      </h3>
                       <ul className="modal-bullets font-semibold">
                         {activeProject.outcomes.map((item, idx) => (
                           <li key={idx}>
