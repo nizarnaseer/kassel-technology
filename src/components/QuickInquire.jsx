@@ -176,6 +176,8 @@ export default function QuickInquire({ addMessage, isToastActive }) {
                 </span>
                 <input
                   type="text"
+                  id="terminal-input"
+                  aria-label="Type response"
                   className="terminal-input"
                   placeholder={
                     step === 0 ? "Enter your name..." : 
