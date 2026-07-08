@@ -41,7 +41,7 @@ export default function Header({ currentView, setCurrentView, isLoggedIn, handle
       <div className="header-container">
         <div className="logo-section" onClick={() => handleNavClick('hero')}>
           <div className="logo-icon-wrapper">
-            <img src="/apple-touch-icon.png" alt="Kassel Technology Logo" className="logo-icon" style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
+            <img src="/favicon-32x32.png" alt="Kassel Technology Logo" className="logo-icon" style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
           </div>
           <div className="logo-text-wrapper">
             <span className="logo-title">KASSEL</span>
