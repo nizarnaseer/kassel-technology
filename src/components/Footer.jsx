@@ -10,13 +10,18 @@ export default function Footer({ setCurrentView }) {
     }, 100);
   };
 
+  const handleLinkClick = (e, sectionId) => {
+    e.preventDefault();
+    handleNavClick(sectionId);
+  };
+
   return (
     <footer className="footer-section">
       <div className="footer-container">
         
         <div className="footer-brand-column">
           <div className="footer-logo">
-            <img src="/apple-touch-icon.png" alt="Kassel Technology Logo" className="logo-icon" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
+            <img src="/favicon-32x32.png" alt="Kassel Technology Logo" className="logo-icon" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
             <div className="footer-logo-text">
               <span className="footer-logo-title">KASSEL</span>
               <span className="footer-logo-subtitle">TECHNOLOGY</span>
@@ -34,11 +39,11 @@ export default function Footer({ setCurrentView }) {
         <div className="footer-links-column">
           <h4 className="footer-column-title">Quick Links</h4>
           <ul className="footer-links-list">
-            <li><button onClick={() => handleNavClick('hero')} className="footer-link">Home</button></li>
-            <li><button onClick={() => handleNavClick('about')} className="footer-link">About Us</button></li>
-            <li><button onClick={() => handleNavClick('services')} className="footer-link">Services</button></li>
-            <li><button onClick={() => handleNavClick('projects')} className="footer-link">Projects</button></li>
-            <li><button onClick={() => handleNavClick('contact')} className="footer-link">Contact Us</button></li>
+            <li><a href="#hero" onClick={(e) => handleLinkClick(e, 'hero')} className="footer-link">Home</a></li>
+            <li><a href="#about" onClick={(e) => handleLinkClick(e, 'about')} className="footer-link">About Us</a></li>
+            <li><a href="#services" onClick={(e) => handleLinkClick(e, 'services')} className="footer-link">Services</a></li>
+            <li><a href="#projects" onClick={(e) => handleLinkClick(e, 'projects')} className="footer-link">Projects</a></li>
+            <li><a href="#contact" onClick={(e) => handleLinkClick(e, 'contact')} className="footer-link">Contact Us</a></li>
           </ul>
         </div>
 
@@ -202,6 +207,8 @@ export default function Footer({ setCurrentView }) {
           cursor: pointer;
           text-align: left;
           padding: 0;
+          text-decoration: none;
+          display: inline-block;
           transition: var(--transition-smooth);
         }
 

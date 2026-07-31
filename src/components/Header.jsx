@@ -32,6 +32,11 @@ export default function Header({ currentView, setCurrentView, isLoggedIn, handle
     }
   };
 
+  const handleLinkClick = (e, sectionId) => {
+    e.preventDefault();
+    handleNavClick(sectionId);
+  };
+
   const activeLinkStyle = (viewName) => {
     return currentView === viewName ? 'nav-link active' : 'nav-link';
   };
@@ -51,11 +56,11 @@ export default function Header({ currentView, setCurrentView, isLoggedIn, handle
 
         {/* Desktop Nav */}
         <nav className="desktop-nav">
-          <button onClick={() => handleNavClick('hero')} className="nav-link">Home</button>
-          <button onClick={() => handleNavClick('about')} className="nav-link">About</button>
-          <button onClick={() => handleNavClick('services')} className="nav-link">Services</button>
-          <button onClick={() => handleNavClick('projects')} className="nav-link">Projects</button>
-          <button onClick={() => handleNavClick('contact')} className="nav-link">Contact</button>
+          <a href="#hero" onClick={(e) => handleLinkClick(e, 'hero')} className="nav-link">Home</a>
+          <a href="#about" onClick={(e) => handleLinkClick(e, 'about')} className="nav-link">About</a>
+          <a href="#services" onClick={(e) => handleLinkClick(e, 'services')} className="nav-link">Services</a>
+          <a href="#projects" onClick={(e) => handleLinkClick(e, 'projects')} className="nav-link">Projects</a>
+          <a href="#contact" onClick={(e) => handleLinkClick(e, 'contact')} className="nav-link">Contact</a>
         </nav>
 
         {/* Mobile Menu Button */}
@@ -71,11 +76,11 @@ export default function Header({ currentView, setCurrentView, isLoggedIn, handle
       {/* Mobile Nav Drawer */}
       <div className={`mobile-nav-drawer ${mobileMenuOpen ? 'open' : ''}`}>
         <div className="mobile-nav-links">
-          <button onClick={() => handleNavClick('hero')} className="mobile-nav-link">Home</button>
-          <button onClick={() => handleNavClick('about')} className="mobile-nav-link">About Us</button>
-          <button onClick={() => handleNavClick('services')} className="mobile-nav-link">Our Services</button>
-          <button onClick={() => handleNavClick('projects')} className="mobile-nav-link">Projects</button>
-          <button onClick={() => handleNavClick('contact')} className="mobile-nav-link">Contact</button>
+          <a href="#hero" onClick={(e) => handleLinkClick(e, 'hero')} className="mobile-nav-link">Home</a>
+          <a href="#about" onClick={(e) => handleLinkClick(e, 'about')} className="mobile-nav-link">About Us</a>
+          <a href="#services" onClick={(e) => handleLinkClick(e, 'services')} className="mobile-nav-link">Our Services</a>
+          <a href="#projects" onClick={(e) => handleLinkClick(e, 'projects')} className="mobile-nav-link">Projects</a>
+          <a href="#contact" onClick={(e) => handleLinkClick(e, 'contact')} className="mobile-nav-link">Contact</a>
         </div>
       </div>
 
@@ -173,6 +178,7 @@ export default function Header({ currentView, setCurrentView, isLoggedIn, handle
           cursor: pointer;
           padding: 0.5rem 0;
           position: relative;
+          text-decoration: none;
         }
 
         .nav-link::after {
@@ -295,6 +301,7 @@ export default function Header({ currentView, setCurrentView, isLoggedIn, handle
           display: flex;
           align-items: center;
           gap: 0.75rem;
+          text-decoration: none;
           transition: var(--transition-smooth);
         }
 
