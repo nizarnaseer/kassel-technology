@@ -228,20 +228,28 @@ export default function Services() {
         </p>
         <div className="coverage-grid">
           <div className="coverage-region">
-            <h3 className="region-name text-cyan">Selangor & Kuala Lumpur (Central Hub)</h3>
-            <p className="region-list">Ampang, Shah Alam, Klang, Petaling Jaya, Subang Jaya, Puchong, Rawang, Kajang, Seri Kembangan, Cyberjaya, Cheras, Kepong, Sentul.</p>
+            <h3 className="region-name text-cyan">Central Region (Selangor, KL, Putrajaya)</h3>
+            <p className="region-list">Ampang, Shah Alam, Klang, Petaling Jaya, Subang Jaya, Puchong, Rawang, Kajang, Seri Kembangan, Cyberjaya, Cheras, Kepong, Putrajaya FT.</p>
           </div>
           <div className="coverage-region">
-            <h3 className="region-name text-cyan">Sabah (East Malaysia Support)</h3>
-            <p className="region-list">Kota Kinabalu, Sandakan, Tawau, Lahad Datu, Beaufort, Ranau, Keningau, Tuaran, Penampang.</p>
+            <h3 className="region-name text-cyan">Northern Region (Penang, Perak, Kedah, Perlis)</h3>
+            <p className="region-list">Bayan Lepas, Butterworth, Perai, Kulim High-Tech Park, Alor Setar, Sungai Petani, Ipoh, Taiping, Kamunting, Kangar.</p>
+          </div>
+          <div className="coverage-region">
+            <h3 className="region-name text-cyan">Southern Region (Johor, Melaka, Negeri Sembilan)</h3>
+            <p className="region-list">Pasir Gudang, Johor Bahru, Senai, Tampoi, Batu Pahat, Muar, Melaka Town, Cheng Industrial Area, Seremban, Senawang.</p>
+          </div>
+          <div className="coverage-region">
+            <h3 className="region-name text-cyan">East Coast Region (Pahang, Terengganu, Kelantan)</h3>
+            <p className="region-list">Kuantan Port, Pekan Industrial Park, Gebeng, Kemaman Supply Base, Kuala Terengganu, Paka, Kota Bharu.</p>
           </div>
           <div className="coverage-region">
             <h3 className="region-name text-cyan">Sarawak (East Malaysia Support)</h3>
-            <p className="region-list">Kuching, Sibu, Miri, Bintulu, Samalaju Industrial Park, Samarahan, Sarikei, Mukah.</p>
+            <p className="region-list">Kuching, Sibu, Miri, Bintulu, Samalaju Industrial Park, Samarahan, Sarikei, Mukah, Limbang.</p>
           </div>
           <div className="coverage-region">
-            <h3 className="region-name text-cyan">Other Regions Served</h3>
-            <p className="region-list">Johor (Pasir Gudang, Johor Bahru), Penang (Bayan Lepas, Butterworth), Perak (Ipoh), Melaka, Negeri Sembilan (Seremban).</p>
+            <h3 className="region-name text-cyan">Sabah & Labuan (East Malaysia Support)</h3>
+            <p className="region-list">Kota Kinabalu, Sandakan, Tawau, Lahad Datu, Beaufort, Ranau, Keningau, Tuaran, Penampang, Labuan FT.</p>
           </div>
         </div>
       </div>
@@ -546,7 +554,7 @@ export default function Services() {
 
         .coverage-grid {
           display: grid;
-          grid-template-columns: repeat(2, 1fr);
+          grid-template-columns: repeat(3, 1fr);
           gap: 2rem;
         }
 
@@ -561,6 +569,12 @@ export default function Services() {
           font-size: 0.85rem;
           color: var(--text-secondary);
           line-height: 1.5;
+        }
+
+        @media (max-width: 1024px) {
+          .coverage-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
         }
 
         @media (max-width: 768px) {
