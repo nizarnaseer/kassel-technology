@@ -21,7 +21,7 @@ export default function Footer({ setCurrentView }) {
         
         <div className="footer-brand-column">
           <div className="footer-logo">
-            <img src="/favicon-32x32.png" alt="Kassel Technology Logo" className="logo-icon" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
+            <img src="/favicon-32x32.png" alt="Kassel Technology - PLC Programming, SCADA & Control Panel Wiring Services Malaysia" className="logo-icon" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
             <div className="footer-logo-text">
               <span className="footer-logo-title">KASSEL</span>
               <span className="footer-logo-subtitle">TECHNOLOGY</span>

@@ -43,7 +43,7 @@ export default function Projects({ projects }) {
             style={{ animationDelay: `${idx * 80}ms` }}
           >
             <div className="project-img-wrapper">
-              <img src={p.image} alt={p.title} className="project-img" loading="lazy" />
+              <img src={p.image} alt={`${p.title} - ${p.category} | Kassel Technology`} className="project-img" loading="lazy" />
               <div className="project-category-overlay">{p.category}</div>
             </div>
             
