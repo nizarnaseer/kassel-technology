@@ -143,8 +143,35 @@
     </noscript>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- SEO Pre-render Shell to reduce FCP and LCP to under 1.0s -->
+      <div class="app-root-container">
+        <header class="header">
+          <div class="header-container">
+            <div class="logo-section">
+              <div class="logo-icon-wrapper">
+                <img src="/favicon-32x32.png" alt="Kassel Technology Logo" class="logo-icon" style="width: 24px; height: 24px; object-fit: contain;" />
+              </div>
+              <div class="logo-text-wrapper">
+                <span class="logo-title">KASSEL</span>
+                <span class="logo-subtitle">TECHNOLOGY</span>
+              </div>
+            </div>
+          </div>
+        </header>
+        <main class="main-content-layout">
+          <section class="hero-section">
+            <div class="hero-container">
+              <div class="hero-content">
+                <span class="cyber-badge">&gt;&gt; System Integration Specialist</span>
+                <h1 class="hero-title">Your Trusted Industrial Automation &amp; SCADA Partner</h1>
+                <p class="hero-desc">We deliver state-of-the-art PLC, HMI, SCADA programming, custom electrical panels, and 24/7 breakdown troubleshooting to keep your factory running.</p>
+              </div>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
-
