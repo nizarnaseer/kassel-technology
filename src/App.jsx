@@ -1,4 +1,4 @@
-import React, { useState, useEffect, lazy, Suspense } from 'react';
+import React, { useState, useEffect, lazy, Suspense, useRef } from 'react';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Hero from './components/Hero';
@@ -10,8 +10,7 @@ const Admin = lazy(() => import('./components/Admin'));
 import { initialProjects } from './data/initialProjects';
 import QuickInquire from './components/QuickInquire';
 import { initialTeam } from './data/initialTeam';
-import { db, isFirebaseEnabled } from './firebase';
-import { collection, onSnapshot, doc, setDoc, deleteDoc, getDocs } from 'firebase/firestore';
+import { isFirebaseEnabled } from './services/config';
 
 export default function App() {
   const [currentView, setCurrentView] = useState('home'); // 'home' | 'admin'
@@ -22,6 +21,7 @@ export default function App() {
   const [activeToast, setActiveToast] = useState(null);
   const [adminActiveTab, setAdminActiveTab] = useState('projects');
   const [adminActiveMessage, setAdminActiveMessage] = useState(null);
+  const dbServiceRef = useRef(null);
 
   // Initialize Routing & Handle Path Routing
   useEffect(() => {
@@ -80,66 +80,39 @@ export default function App() {
 
     const initializeFirebaseAndListen = async () => {
       try {
-        // A. Seed Projects if collection is empty
-        const projectsRef = collection(db, 'projects');
-        const projectsSnap = await getDocs(projectsRef);
-        if (projectsSnap.empty && !isCancelled) {
-          console.log('Firebase Database: Seeding default projects...');
-          for (const proj of initialProjects) {
-            await setDoc(doc(db, 'projects', proj.id), proj);
-          }
-        }
+        const service = await import('./services/db');
+        if (isCancelled) return;
+        dbServiceRef.current = service;
 
-        // B. Seed Team if collection is empty
-        const teamRef = collection(db, 'team');
-        const teamSnap = await getDocs(teamRef);
-        if (teamSnap.empty && !isCancelled) {
-          console.log('Firebase Database: Seeding default team structure...');
-          for (const member of initialTeam) {
-            await setDoc(doc(db, 'team', member.id), member);
-          }
-        }
+        // A. Seed default database structures if empty
+        await service.seedInitialData(isCancelled, initialProjects, initialTeam);
+
+        if (isCancelled) return;
+
+        // B. Set up real-time sync listeners
+        const unsubProjects = service.subscribeToProjects((projs) => {
+          setProjects(projs);
+          localStorage.setItem('kassel_projects', JSON.stringify(projs));
+        });
+
+        const unsubTeam = service.subscribeToTeam((members) => {
+          setTeam(members);
+          localStorage.setItem('kassel_team', JSON.stringify(members));
+        });
+
+        const unsubMessages = service.subscribeToMessages((msgs) => {
+          setMessages(msgs);
+          localStorage.setItem('kassel_messages', JSON.stringify(msgs));
+        });
+
+        cleanupListeners = () => {
+          unsubProjects();
+          unsubTeam();
+          unsubMessages();
+        };
       } catch (error) {
-        console.error('Firebase initialization seeding error:', error);
+        console.error('Failed to initialize database service dynamically:', error);
       }
-
-      if (isCancelled) return;
-
-      // C. Set up real-time sync listeners
-      const unsubProjects = onSnapshot(collection(db, 'projects'), (snapshot) => {
-        const projs = [];
-        snapshot.forEach((doc) => {
-          const data = doc.data();
-          if (data.image && data.image.endsWith('.jpg') && data.image.includes('/assets/projects/')) {
-            data.image = data.image.replace('.jpg', '.webp');
-          }
-          projs.push({ id: doc.id, ...data });
-        });
-        setProjects(projs);
-      });
-
-      const unsubTeam = onSnapshot(collection(db, 'team'), (snapshot) => {
-        const members = [];
-        snapshot.forEach((doc) => {
-          members.push({ id: doc.id, ...doc.data() });
-        });
-        setTeam(members);
-      });
-
-      const unsubMessages = onSnapshot(collection(db, 'messages'), (snapshot) => {
-        const msgs = [];
-        snapshot.forEach((doc) => {
-          msgs.push({ id: doc.id, ...doc.data() });
-        });
-        msgs.sort((a, b) => new Date(b.date) - new Date(a.date));
-        setMessages(msgs);
-      });
-
-      cleanupListeners = () => {
-        unsubProjects();
-        unsubTeam();
-        unsubMessages();
-      };
     };
 
     const startTimer = setTimeout(() => {
@@ -304,9 +277,9 @@ export default function App() {
     const projId = 'proj-' + Date.now();
     const projectData = { ...newProj, id: projId };
     
-    if (isFirebaseEnabled) {
+    if (isFirebaseEnabled && dbServiceRef.current) {
       try {
-        await setDoc(doc(db, 'projects', projId), projectData);
+        await dbServiceRef.current.addProject(projId, projectData);
       } catch (err) {
         console.error('Error adding project to Firebase:', err);
       }
@@ -319,9 +292,9 @@ export default function App() {
   const editProject = async (id, updatedProj) => {
     const projectData = { ...updatedProj, id };
     
-    if (isFirebaseEnabled) {
+    if (isFirebaseEnabled && dbServiceRef.current) {
       try {
-        await setDoc(doc(db, 'projects', id), projectData);
+        await dbServiceRef.current.addProject(id, projectData);
       } catch (err) {
         console.error('Error updating project in Firebase:', err);
       }
@@ -333,9 +306,9 @@ export default function App() {
 
   const deleteProject = async (id) => {
     if (window.confirm('Are you sure you want to delete this case study?')) {
-      if (isFirebaseEnabled) {
+      if (isFirebaseEnabled && dbServiceRef.current) {
         try {
-          await deleteDoc(doc(db, 'projects', id));
+          await dbServiceRef.current.deleteProject(id);
         } catch (err) {
           console.error('Error deleting project from Firebase:', err);
         }
@@ -351,9 +324,9 @@ export default function App() {
     const tmId = 'tm-' + Date.now();
     const memberData = { ...newMember, id: tmId };
     
-    if (isFirebaseEnabled) {
+    if (isFirebaseEnabled && dbServiceRef.current) {
       try {
-        await setDoc(doc(db, 'team', tmId), memberData);
+        await dbServiceRef.current.addTeamMember(tmId, memberData);
       } catch (err) {
         console.error('Error adding team member to Firebase:', err);
       }
@@ -366,9 +339,9 @@ export default function App() {
   const editTeamMember = async (id, updatedMember) => {
     const memberData = { ...updatedMember, id };
     
-    if (isFirebaseEnabled) {
+    if (isFirebaseEnabled && dbServiceRef.current) {
       try {
-        await setDoc(doc(db, 'team', id), memberData);
+        await dbServiceRef.current.addTeamMember(id, memberData);
       } catch (err) {
         console.error('Error updating team member in Firebase:', err);
       }
@@ -380,9 +353,9 @@ export default function App() {
 
   const deleteTeamMember = async (id) => {
     if (window.confirm('Are you sure you want to remove this staff member?')) {
-      if (isFirebaseEnabled) {
+      if (isFirebaseEnabled && dbServiceRef.current) {
         try {
-          await deleteDoc(doc(db, 'team', id));
+          await dbServiceRef.current.deleteTeamMember(id);
         } catch (err) {
           console.error('Error deleting team member from Firebase:', err);
         }
@@ -395,9 +368,9 @@ export default function App() {
 
   // CRUD for Messages
   const addMessage = async (newMsg) => {
-    if (isFirebaseEnabled) {
+    if (isFirebaseEnabled && dbServiceRef.current) {
       try {
-        await setDoc(doc(db, 'messages', newMsg.id), newMsg);
+        await dbServiceRef.current.addMessage(newMsg.id, newMsg);
       } catch (err) {
         console.error('Error adding message to Firebase:', err);
       }
@@ -409,9 +382,9 @@ export default function App() {
 
   const deleteMessage = async (id) => {
     if (window.confirm('Delete this message permanently?')) {
-      if (isFirebaseEnabled) {
+      if (isFirebaseEnabled && dbServiceRef.current) {
         try {
-          await deleteDoc(doc(db, 'messages', id));
+          await dbServiceRef.current.deleteMessage(id);
         } catch (err) {
           console.error('Error deleting message from Firebase:', err);
         }
@@ -427,9 +400,9 @@ export default function App() {
     if (!originalMsg) return;
     const updatedMsg = { ...originalMsg, read: true };
     
-    if (isFirebaseEnabled) {
+    if (isFirebaseEnabled && dbServiceRef.current) {
       try {
-        await setDoc(doc(db, 'messages', id), updatedMsg);
+        await dbServiceRef.current.addMessage(id, updatedMsg);
       } catch (err) {
         console.error('Error updating message in Firebase:', err);
       }
@@ -441,28 +414,9 @@ export default function App() {
 
   // System Database Reset
   const resetDatabase = async () => {
-    if (isFirebaseEnabled) {
+    if (isFirebaseEnabled && dbServiceRef.current) {
       try {
-        // Reset Projects: delete existing and write initial
-        const projectsRef = collection(db, 'projects');
-        const projectsSnap = await getDocs(projectsRef);
-        for (const docItem of projectsSnap.docs) {
-          await deleteDoc(doc(db, 'projects', docItem.id));
-        }
-        for (const proj of initialProjects) {
-          await setDoc(doc(db, 'projects', proj.id), proj);
-        }
-
-        // Reset Team: delete existing and write initial
-        const teamRef = collection(db, 'team');
-        const teamSnap = await getDocs(teamRef);
-        for (const docItem of teamSnap.docs) {
-          await deleteDoc(doc(db, 'team', docItem.id));
-        }
-        for (const member of initialTeam) {
-          await setDoc(doc(db, 'team', member.id), member);
-        }
-
+        await dbServiceRef.current.resetDatabase(initialProjects, initialTeam);
         console.log('Database successfully reset to default values.');
       } catch (err) {
         console.error('Error resetting database in Firebase:', err);
