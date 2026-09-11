@@ -1,4 +1,6 @@
-export const initialProjects = [
+import slugify from 'slugify';
+
+const rawProjects = [
   {
     id: "proj-1",
     title: "Palletizing Machine for Glass Jar Products",
@@ -124,3 +126,8 @@ export const initialProjects = [
     image: "/assets/projects/modbus.webp"
   }
 ];
+
+export const initialProjects = rawProjects.map(p => ({
+  ...p,
+  slug: slugify(p.title, { lower: true, strict: true })
+}));

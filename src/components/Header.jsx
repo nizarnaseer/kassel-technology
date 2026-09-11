@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, X, Cpu, User, Settings, LogOut } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 export default function Header({ currentView, setCurrentView, isLoggedIn, handleLogout }) {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -17,15 +18,17 @@ export default function Header({ currentView, setCurrentView, isLoggedIn, handle
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const handleNavClick = (sectionId) => {
     setMobileMenuOpen(false);
-    if (currentView !== 'home') {
-      setCurrentView('home');
-      // Wait for React to render the home view before scrolling
+    if (location.pathname !== '/') {
+      navigate('/');
       setTimeout(() => {
         const el = document.getElementById(sectionId);
         if (el) el.scrollIntoView({ behavior: 'smooth' });
-      }, 100);
+      }, 300);
     } else {
       const el = document.getElementById(sectionId);
       if (el) el.scrollIntoView({ behavior: 'smooth' });
@@ -38,7 +41,7 @@ export default function Header({ currentView, setCurrentView, isLoggedIn, handle
   };
 
   const activeLinkStyle = (viewName) => {
-    return currentView === viewName ? 'nav-link active' : 'nav-link';
+    return location.pathname === `/${viewName}` ? 'active' : '';
   };
 
   return (
@@ -56,11 +59,11 @@ export default function Header({ currentView, setCurrentView, isLoggedIn, handle
 
         {/* Desktop Nav */}
         <nav className="desktop-nav">
-          <a href="#hero" onClick={(e) => handleLinkClick(e, 'hero')} className="nav-link">Home</a>
-          <a href="#about" onClick={(e) => handleLinkClick(e, 'about')} className="nav-link">About</a>
-          <a href="#services" onClick={(e) => handleLinkClick(e, 'services')} className="nav-link">Services</a>
-          <a href="#projects" onClick={(e) => handleLinkClick(e, 'projects')} className="nav-link">Projects</a>
-          <a href="#contact" onClick={(e) => handleLinkClick(e, 'contact')} className="nav-link">Contact</a>
+          <a href="/#hero" onClick={(e) => handleLinkClick(e, 'hero')} className="nav-link">Home</a>
+          <a href="/#about" onClick={(e) => handleLinkClick(e, 'about')} className="nav-link">About</a>
+          <a href="/#services" onClick={(e) => handleLinkClick(e, 'services')} className="nav-link">Services</a>
+          <a href="/#projects" onClick={(e) => handleLinkClick(e, 'projects')} className="nav-link">Projects</a>
+          <a href="/#contact" onClick={(e) => handleLinkClick(e, 'contact')} className="nav-link">Contact</a>
         </nav>
 
         {/* Mobile Menu Button */}
@@ -76,11 +79,11 @@ export default function Header({ currentView, setCurrentView, isLoggedIn, handle
       {/* Mobile Nav Drawer */}
       <div className={`mobile-nav-drawer ${mobileMenuOpen ? 'open' : ''}`}>
         <div className="mobile-nav-links">
-          <a href="#hero" onClick={(e) => handleLinkClick(e, 'hero')} className="mobile-nav-link">Home</a>
-          <a href="#about" onClick={(e) => handleLinkClick(e, 'about')} className="mobile-nav-link">About Us</a>
-          <a href="#services" onClick={(e) => handleLinkClick(e, 'services')} className="mobile-nav-link">Our Services</a>
-          <a href="#projects" onClick={(e) => handleLinkClick(e, 'projects')} className="mobile-nav-link">Projects</a>
-          <a href="#contact" onClick={(e) => handleLinkClick(e, 'contact')} className="mobile-nav-link">Contact</a>
+          <a href="/#hero" onClick={(e) => handleLinkClick(e, 'hero')} className="mobile-nav-link">Home</a>
+          <a href="/#about" onClick={(e) => handleLinkClick(e, 'about')} className="mobile-nav-link">About Us</a>
+          <a href="/#services" onClick={(e) => handleLinkClick(e, 'services')} className="mobile-nav-link">Our Services</a>
+          <a href="/#projects" onClick={(e) => handleLinkClick(e, 'projects')} className="mobile-nav-link">Projects</a>
+          <a href="/#contact" onClick={(e) => handleLinkClick(e, 'contact')} className="mobile-nav-link">Contact</a>
         </div>
       </div>
 

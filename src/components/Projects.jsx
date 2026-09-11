@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Calendar, User, Cpu, ClipboardList, CheckCircle2, ChevronRight, X, AlertCircle } from 'lucide-react';
+import { Calendar, ChevronRight, AlertCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export default function Projects({ projects }) {
   const [filter, setFilter] = useState('All');
-  const [activeProject, setActiveProject] = useState(null);
+  const navigate = useNavigate();
 
   const categories = ['All', 'PLC & HMI Retrofit', 'Industrial Machinery', 'SCADA & Data Systems', 'Embedded & Gateways'];
 
@@ -65,7 +66,7 @@ export default function Projects({ projects }) {
               </div>
 
               <button 
-                onClick={() => setActiveProject(p)} 
+                onClick={() => navigate(`/projects/${p.slug}`)} 
                 className="btn-read-specs"
               >
                 <span>Technical Specifications</span>
@@ -82,134 +83,6 @@ export default function Projects({ projects }) {
           <AlertCircle size={36} className="text-amber" />
           <h4>No projects published in this category yet.</h4>
           <p className="text-muted">Go to the admin console to publish a new project in this category.</p>
-        </div>
-      )}
-
-      {/* Project Details Modal */}
-      {activeProject && (
-        <div className="modal-overlay" onClick={() => setActiveProject(null)}>
-          <div className="modal-container glass-card animated" onClick={(e) => e.stopPropagation()}>
-            
-            <button className="modal-close-btn" onClick={() => setActiveProject(null)}>
-              <X size={20} />
-            </button>
-
-            <div className="modal-scroll-body">
-              <div className="modal-grid">
-                
-                {/* Left side info */}
-                <div className="modal-primary-info">
-                  <div className="modal-header">
-                    <span className="modal-category">{activeProject.category}</span>
-                    <h2 className="modal-title text-cyan">{activeProject.title}</h2>
-                  </div>
-                  
-                  <div className="modal-metadata">
-                    <div className="meta-item">
-                      <User size={16} className="text-cyan" />
-                      <div>
-                        <span className="meta-label">Client / System Integrator</span>
-                        <span className="meta-val">{activeProject.client}</span>
-                      </div>
-                    </div>
-                    <div className="meta-item">
-                      <Calendar size={16} className="text-cyan" />
-                      <div>
-                        <span className="meta-label">Commissioned Date</span>
-                        <span className="meta-val">{activeProject.date}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <p className="modal-desc-text">{activeProject.description}</p>
-
-                  <div className="tech-badge-container modal-techs">
-                    <span className="tech-heading-label">Integrated Technologies:</span>
-                    <div className="tech-badges-row">
-                      {activeProject.technologies.map((tech, idx) => (
-                        <span key={idx} className="tech-badge-large">{tech}</span>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Before & After retrofits */}
-                  {(activeProject.beforeSpec || activeProject.afterSpec) && (
-                    <div className="retrofit-comparison-box">
-                      <h3 className="modal-section-title">Retrofit Transition Details</h3>
-                      <div className="comparison-cols">
-                        <div className="comparison-card before">
-                          <span className="comparison-badge before">Before Retrofit</span>
-                          <p>{activeProject.beforeSpec}</p>
-                        </div>
-                        <div className="comparison-card after">
-                          <span className="comparison-badge after">After Commissioning</span>
-                          <p>{activeProject.afterSpec}</p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Right side info (Scope, Features, Outcomes) */}
-                <div className="modal-secondary-info">
-                  <img src={activeProject.image} alt={activeProject.title} className="modal-feature-img" />
-
-                  {activeProject.scopeOfWork && activeProject.scopeOfWork.length > 0 && (
-                    <div className="modal-list-section">
-                      <h3 className="modal-section-title">
-                        <ClipboardList size={16} className="text-cyan" />
-                        <span>Scope of Work</span>
-                      </h3>
-                      <ul className="modal-bullets">
-                        {activeProject.scopeOfWork.map((item, idx) => (
-                          <li key={idx}>
-                            <ChevronRight size={12} className="text-cyan text-align-top-2" />
-                            <span>{item}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-
-                  {activeProject.features && activeProject.features.length > 0 && (
-                    <div className="modal-list-section">
-                      <h3 className="modal-section-title">
-                        <Cpu size={16} className="text-cyan" />
-                        <span>Core Features Implemented</span>
-                      </h3>
-                      <ul className="modal-bullets">
-                        {activeProject.features.map((item, idx) => (
-                          <li key={idx}>
-                            <CheckCircle2 size={12} className="text-cyan text-align-top-2" />
-                            <span>{item}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-
-                  {activeProject.outcomes && activeProject.outcomes.length > 0 && (
-                    <div className="modal-list-section">
-                      <h3 className="modal-section-title">
-                        <CheckCircle2 size={16} className="text-amber" />
-                        <span>Project Outcomes</span>
-                      </h3>
-                      <ul className="modal-bullets font-semibold">
-                        {activeProject.outcomes.map((item, idx) => (
-                          <li key={idx}>
-                            <div className="outcome-bullet"></div>
-                            <span className="text-white">{item}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-
-              </div>
-            </div>
-
-          </div>
         </div>
       )}
 

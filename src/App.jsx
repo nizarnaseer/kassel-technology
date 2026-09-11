@@ -1,17 +1,16 @@
 import React, { useState, useEffect, lazy, Suspense, useRef } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 import Header from './components/Header';
 import Footer from './components/Footer';
-import Hero from './components/Hero';
-import About from './components/About';
-import Services from './components/Services';
-import Projects from './components/Projects';
-import FAQ from './components/FAQ';
-import Contact from './components/Contact';
+import Home from './components/Home';
+import ProjectDetail from './components/ProjectDetail';
 const Admin = lazy(() => import('./components/Admin'));
 import { initialProjects } from './data/initialProjects';
 import QuickInquire from './components/QuickInquire';
 import { initialTeam } from './data/initialTeam';
 import { isFirebaseEnabled } from './services/config';
+import slugify from 'slugify';
 
 export default function App() {
   const [currentView, setCurrentView] = useState('home'); // 'home' | 'admin'
@@ -24,26 +23,12 @@ export default function App() {
   const [adminActiveMessage, setAdminActiveMessage] = useState(null);
   const dbServiceRef = useRef(null);
 
-  // Initialize Routing & Handle Path Routing
+  // Login state session recovery
   useEffect(() => {
-    const handleRouting = () => {
-      if (window.location.pathname === '/admin') {
-        setCurrentView('admin');
-      } else {
-        setCurrentView('home');
-      }
-    };
-    
-    handleRouting();
-    window.addEventListener('popstate', handleRouting);
-
-    // Login state session recovery
     const loggedInSession = sessionStorage.getItem('kassel_is_logged_in');
     if (loggedInSession === 'true') {
       setIsLoggedIn(true);
     }
-
-    return () => window.removeEventListener('popstate', handleRouting);
   }, []);
 
   // Initialize Database: Firebase Firestore with local LocalStorage fallback
@@ -142,7 +127,6 @@ export default function App() {
       if (robotsMeta) {
         robotsMeta.content = 'index, follow';
       }
-      document.title = 'Kassel Technology | PLC Programming, SCADA & Control Panel Wiring Malaysia';
     }
   }, [currentView]);
 
@@ -275,8 +259,13 @@ export default function App() {
 
   // CRUD for Projects
   const addProject = async (newProj) => {
-    const projId = 'proj-' + Date.now();
-    const projectData = { ...newProj, id: projId };
+    const projId = `proj-${Date.now()}`;
+    const projectData = { 
+      ...newProj, 
+      id: projId, 
+      date: new Date().toISOString().substring(0, 7),
+      slug: slugify(newProj.title, { lower: true, strict: true })
+    };
     
     if (isFirebaseEnabled && dbServiceRef.current) {
       try {
@@ -291,7 +280,11 @@ export default function App() {
   };
 
   const editProject = async (id, updatedProj) => {
-    const projectData = { ...updatedProj, id };
+    const projectData = { 
+      ...updatedProj, 
+      id,
+      slug: slugify(updatedProj.title, { lower: true, strict: true })
+    };
     
     if (isFirebaseEnabled && dbServiceRef.current) {
       try {
@@ -431,99 +424,92 @@ export default function App() {
   };
 
   return (
-    <div className="app-root-container">
-      <div className="grid-bg-overlay"></div>
-      <div className="cyber-scanner"></div>
-      
-      {/* Floating Animated Cyber Nodes */}
-      <div className="cyber-nodes-container">
-        <div className="cyber-node" style={{ top: '15%', left: '8%', width: '12px', height: '12px', animationDelay: '0s' }}></div>
-        <div className="cyber-node" style={{ top: '45%', left: '88%', width: '8px', height: '8px', animationDelay: '2.5s' }}></div>
-        <div className="cyber-node" style={{ top: '75%', left: '15%', width: '16px', height: '16px', animationDelay: '5s' }}></div>
-        <div className="cyber-node" style={{ top: '85%', left: '72%', width: '10px', height: '10px', animationDelay: '1.2s' }}></div>
-        <div className="cyber-node" style={{ top: '28%', left: '78%', width: '14px', height: '14px', animationDelay: '3.8s' }}></div>
-      </div>
+    <HelmetProvider>
+      <Router>
+        <div className="app-root-container">
+          <div className="grid-bg-overlay"></div>
+          <div className="cyber-scanner"></div>
+          
+          {/* Floating Animated Cyber Nodes */}
+          <div className="cyber-nodes-container">
+            <div className="cyber-node" style={{ top: '15%', left: '8%', width: '12px', height: '12px', animationDelay: '0s' }}></div>
+            <div className="cyber-node" style={{ top: '45%', left: '88%', width: '8px', height: '8px', animationDelay: '2.5s' }}></div>
+            <div className="cyber-node" style={{ top: '75%', left: '15%', width: '16px', height: '16px', animationDelay: '5s' }}></div>
+            <div className="cyber-node" style={{ top: '85%', left: '72%', width: '10px', height: '10px', animationDelay: '1.2s' }}></div>
+            <div className="cyber-node" style={{ top: '28%', left: '78%', width: '14px', height: '14px', animationDelay: '3.8s' }}></div>
+          </div>
 
-      <Header 
-        currentView={currentView} 
-        setCurrentView={handleViewChange} 
-        isLoggedIn={isLoggedIn} 
-        handleLogout={handleLogout} 
-      />
+          <Header 
+            currentView={currentView} 
+            setCurrentView={setCurrentView}
+            isLoggedIn={isLoggedIn}
+            handleLogout={handleLogout}
+          />
 
-      {currentView === 'home' ? (
-        <main className="main-content-layout">
-          <div className="scroll-reveal"><Hero setCurrentView={handleViewChange} /></div>
-          <div className="scroll-reveal"><About team={team} /></div>
-          <div className="scroll-reveal"><Services /></div>
-          <div className="scroll-reveal"><Projects projects={projects} /></div>
-          <div className="scroll-reveal"><FAQ /></div>
-          <div className="scroll-reveal"><Contact addMessage={addMessage} /></div>
-        </main>
-      ) : (
-        <main className="main-content-layout">
-          <Suspense fallback={
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '80vh', color: 'var(--accent-cyan)', fontFamily: 'monospace' }}>
-              &gt;&gt; Booting Admin System...
+          <main className="main-content-layout">
+            <Routes>
+              <Route path="/" element={<Home team={team} projects={projects} addMessage={addMessage} />} />
+              <Route path="/projects/:slug" element={<ProjectDetail projects={projects} />} />
+              <Route path="/admin" element={
+                <Suspense fallback={<div className="min-h-screen flex items-center justify-center pt-20"><div className="loader"></div></div>}>
+                  <Admin 
+                    isLoggedIn={isLoggedIn} 
+                    handleLogin={handleLogin}
+                    handleLogout={handleLogout}
+                    activeTab={adminActiveTab}
+                    setActiveTab={setAdminActiveTab}
+                    activeMessage={adminActiveMessage}
+                    setActiveMessage={setAdminActiveMessage}
+                    projects={projects}
+                    team={team}
+                    messages={messages}
+                    onAddProject={addProject}
+                    onEditProject={editProject}
+                    onDeleteProject={deleteProject}
+                    onUpdateTeamMember={updateTeamMember}
+                    onAddTeamMember={addTeamMember}
+                    onDeleteTeamMember={deleteTeamMember}
+                    onMarkMessageRead={markMessageRead}
+                    onDeleteMessage={deleteMessage}
+                    onResetDatabase={resetDatabase}
+                  />
+                </Suspense>
+              } />
+            </Routes>
+          </main>
+
+          <Footer />
+
+          <Routes>
+            <Route path="/" element={<QuickInquire addMessage={addMessage} isToastActive={!!activeToast} />} />
+          </Routes>
+
+          {/* Real-time Holographic Toast Alert */}
+          {activeToast && (
+            <div className="toast-notification glass-card" onClick={() => { 
+              setCurrentView('admin'); 
+              setAdminActiveTab('inbox');
+              const msg = messages.find(m => m.id === activeToast.id);
+              if (msg) {
+                setAdminActiveMessage(msg);
+                markMessageRead(msg.id);
+              }
+              setActiveToast(null); 
+            }}>
+              <div className="toast-header" onClick={(e) => e.stopPropagation()}>
+                <span className="toast-indicator pulse"></span>
+                <span className="toast-title">New Message Received</span>
+                <button className="toast-close-btn" onClick={() => setActiveToast(null)}>×</button>
+              </div>
+              <div className="toast-body">
+                <p className="toast-sender"><strong>From:</strong> {activeToast.sender}</p>
+                <p className="toast-subject"><strong>Subject:</strong> {activeToast.subject}</p>
+                <p className="toast-desc">{activeToast.message.length > 55 ? activeToast.message.substring(0, 52) + '...' : activeToast.message}</p>
+              </div>
             </div>
-          }>
-            <Admin 
-              projects={projects}
-              messages={messages}
-              team={team}
-              isLoggedIn={isLoggedIn}
-              handleLogin={handleLogin}
-              handleLogout={handleLogout}
-              onAddProject={addProject}
-              onEditProject={editProject}
-              onDeleteProject={deleteProject}
-              onAddTeamMember={addTeamMember}
-              onEditTeamMember={editTeamMember}
-              onDeleteTeamMember={deleteTeamMember}
-              onDeleteMessage={deleteMessage}
-              onMarkMessageRead={markMessageRead}
-              onResetDatabase={resetDatabase}
-              activeTab={adminActiveTab}
-              setActiveTab={setAdminActiveTab}
-              activeMessage={adminActiveMessage}
-              setActiveMessage={setAdminActiveMessage}
-            />
-          </Suspense>
-        </main>
-      )}
+          )}
 
-      <Footer setCurrentView={handleViewChange} />
-
-      {currentView === 'home' && (
-        <QuickInquire addMessage={addMessage} isToastActive={!!activeToast} />
-      )}
-
-      {/* Real-time Holographic Toast Alert */}
-      {activeToast && (
-        <div className="toast-notification glass-card" onClick={() => { 
-          handleViewChange('admin'); 
-          setAdminActiveTab('inbox');
-          const msg = messages.find(m => m.id === activeToast.id);
-          if (msg) {
-            setAdminActiveMessage(msg);
-            markMessageRead(msg.id);
-          }
-          setActiveToast(null); 
-        }}>
-          <div className="toast-header" onClick={(e) => e.stopPropagation()}>
-            <span className="toast-indicator pulse"></span>
-            <span className="toast-title">New Message Received</span>
-            <button className="toast-close-btn" onClick={() => setActiveToast(null)}>×</button>
-          </div>
-          <div className="toast-body">
-            <p className="toast-sender"><strong>From:</strong> {activeToast.sender}</p>
-            <p className="toast-subject"><strong>Subject:</strong> {activeToast.subject}</p>
-            <p className="toast-desc">{activeToast.message.length > 55 ? activeToast.message.substring(0, 52) + '...' : activeToast.message}</p>
-          </div>
-        </div>
-      )}
-
-      <style>{`
+          <style>{`
         .app-root-container {
           min-height: 100vh;
           display: flex;
@@ -631,6 +617,8 @@ export default function App() {
           line-height: 1.4;
         }
       `}</style>
-    </div>
+        </div>
+      </Router>
+    </HelmetProvider>
   );
 }
