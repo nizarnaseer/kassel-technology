@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Lock, Unlock, LogOut, FilePlus, Eye, Trash2, CheckCircle2, RotateCcw, AlertTriangle, FileText, Mail, BarChart3, Edit, Upload, Users, Sliders } from 'lucide-react';
+import { Helmet } from 'react-helmet-async';
 
 export default function Admin({
   projects,
@@ -316,7 +317,12 @@ export default function Admin({
   // Login View
   if (!isLoggedIn) {
     return (
-      <section className="admin-section login-view">
+      <>
+        <Helmet>
+          <title>Kassel Tech | Admin Login</title>
+          <meta name="robots" content="noindex, nofollow" />
+        </Helmet>
+        <section className="admin-section login-view">
         <div className="login-box glass-card animated">
           <div className="login-header">
             <div className="login-icon-box">
@@ -364,6 +370,7 @@ export default function Admin({
             </div>
           </form>
         </div>
+        </section>
 
         <style>{`
           .login-view {
@@ -440,7 +447,7 @@ export default function Admin({
             margin-top: 0.25rem;
           }
         `}</style>
-      </section>
+      </>
     );
   }
 
@@ -505,7 +512,12 @@ export default function Admin({
   };
 
   return (
-    <section className="admin-section console-view">
+    <>
+      <Helmet>
+        <title>Kassel Tech | Admin Dashboard</title>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
+      <section className="admin-section console-view">
       <div className="bg-glow-dot-1"></div>
       
       <div className="console-layout">
@@ -1903,6 +1915,7 @@ export default function Admin({
           }
         }
       `}</style>
-    </section>
+      </section>
+    </>
   );
 }

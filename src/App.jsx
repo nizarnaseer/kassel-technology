@@ -13,7 +13,6 @@ import { isFirebaseEnabled } from './services/config';
 import slugify from 'slugify';
 
 export default function App() {
-  const [currentView, setCurrentView] = useState('home'); // 'home' | 'admin'
   const [projects, setProjects] = useState([]);
   const [messages, setMessages] = useState([]);
   const [team, setTeam] = useState([]);
@@ -115,23 +114,7 @@ export default function App() {
     };
   }, []);
 
-  // Manage SEO title and meta robots dynamically based on view state
-  useEffect(() => {
-    let robotsMeta = document.querySelector('meta[name="robots"]');
-    if (currentView === 'admin') {
-      if (!robotsMeta) {
-        robotsMeta = document.createElement('meta');
-        robotsMeta.name = 'robots';
-        document.head.appendChild(robotsMeta);
-      }
-      robotsMeta.content = 'noindex, nofollow';
-      document.title = 'Kassel Tech | Admin System';
-    } else {
-      if (robotsMeta) {
-        robotsMeta.content = 'index, follow';
-      }
-    }
-  }, [currentView]);
+
 
   // Prevent right-click context menu (on non-inputs) and image dragging to protect content
   useEffect(() => {
