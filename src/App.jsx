@@ -466,7 +466,7 @@ export default function App() {
                     onAddProject={addProject}
                     onEditProject={editProject}
                     onDeleteProject={deleteProject}
-                    onUpdateTeamMember={updateTeamMember}
+                    onUpdateTeamMember={editTeamMember}
                     onAddTeamMember={addTeamMember}
                     onDeleteTeamMember={deleteTeamMember}
                     onMarkMessageRead={markMessageRead}
