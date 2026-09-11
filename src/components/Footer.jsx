@@ -1,13 +1,22 @@
 import React from 'react';
-import { Cpu, Phone, Mail, MapPin, Landmark, Award } from 'lucide-react';
+import { Award, Phone, Mail, MapPin } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
 
-export default function Footer({ setCurrentView }) {
+export default function Footer() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const handleNavClick = (sectionId) => {
-    setCurrentView('home');
-    setTimeout(() => {
+    if (location.pathname !== '/') {
+      navigate('/');
+      setTimeout(() => {
+        const el = document.getElementById(sectionId);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 300);
+    } else {
       const el = document.getElementById(sectionId);
       if (el) el.scrollIntoView({ behavior: 'smooth' });
-    }, 100);
+    }
   };
 
   const handleLinkClick = (e, sectionId) => {
@@ -39,11 +48,11 @@ export default function Footer({ setCurrentView }) {
         <div className="footer-links-column">
           <h4 className="footer-column-title">Quick Links</h4>
           <ul className="footer-links-list">
-            <li><a href="#hero" onClick={(e) => handleLinkClick(e, 'hero')} className="footer-link">Home</a></li>
-            <li><a href="#about" onClick={(e) => handleLinkClick(e, 'about')} className="footer-link">About Us</a></li>
-            <li><a href="#services" onClick={(e) => handleLinkClick(e, 'services')} className="footer-link">Services</a></li>
-            <li><a href="#projects" onClick={(e) => handleLinkClick(e, 'projects')} className="footer-link">Projects</a></li>
-            <li><a href="#contact" onClick={(e) => handleLinkClick(e, 'contact')} className="footer-link">Contact Us</a></li>
+            <li><a href="/#hero" onClick={(e) => handleLinkClick(e, 'hero')} className="footer-link">Home</a></li>
+            <li><a href="/#about" onClick={(e) => handleLinkClick(e, 'about')} className="footer-link">About Us</a></li>
+            <li><a href="/#services" onClick={(e) => handleLinkClick(e, 'services')} className="footer-link">Services</a></li>
+            <li><a href="/#projects" onClick={(e) => handleLinkClick(e, 'projects')} className="footer-link">Projects</a></li>
+            <li><a href="/#contact" onClick={(e) => handleLinkClick(e, 'contact')} className="footer-link">Contact Us</a></li>
           </ul>
         </div>
 

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { Calendar, ChevronLeft, CheckCircle2 } from 'lucide-react';
+import { Calendar, User, Cpu, ClipboardList, CheckCircle2, ChevronRight, AlertCircle, ChevronLeft } from 'lucide-react';
 
 export default function ProjectDetail({ projects }) {
   const { slug } = useParams();
@@ -63,111 +63,132 @@ export default function ProjectDetail({ projects }) {
         </script>
       </Helmet>
 
-      <section className="pt-32 pb-20">
+      <section className="projects-section" style={{ paddingTop: '8rem', minHeight: '100vh' }}>
         <div className="container-custom">
           
-          <button onClick={() => navigate('/')} className="flex items-center gap-2 text-cyan-400 hover:text-cyan-300 transition-colors mb-8">
-            <ChevronLeft size={20} />
+          <button onClick={() => navigate('/')} className="btn-read-specs" style={{ marginBottom: '2rem', display: 'inline-flex', padding: '0.5rem 1rem', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '20px' }}>
+            <ChevronLeft size={16} style={{ marginRight: '8px' }} />
             <span>Back to Projects</span>
           </button>
 
-          <div className="glass-card overflow-hidden">
-            <div className="grid md:grid-cols-2 gap-0">
-              <div className="p-8 md:p-12 border-b md:border-b-0 md:border-r border-slate-700/50 flex flex-col justify-center">
-                <span className="cyber-badge self-start mb-6">{project.category}</span>
-                <h1 className="font-heading text-3xl md:text-4xl font-bold text-white mb-4 leading-tight">
-                  {project.title}
-                </h1>
+          <div className="modal-container glass-card animated" style={{ position: 'relative', width: '100%', maxWidth: '1100px', margin: '0 auto', maxHeight: 'none', transform: 'none' }}>
+            <div className="modal-scroll-body" style={{ maxHeight: 'none', overflowY: 'visible', padding: '2rem' }}>
+              <div className="modal-grid">
                 
-                <div className="flex items-center gap-6 text-sm text-slate-400 mb-8">
-                  <div className="flex items-center gap-2">
-                    <Calendar size={16} className="text-cyan-400" />
-                    <span>{project.date}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-cyan-400 font-semibold">Client:</span>
-                    <span>{project.client}</span>
-                  </div>
-                </div>
-
-                <div className="space-y-6 text-slate-300 leading-relaxed">
-                  <p>{project.description}</p>
-                </div>
-
-                <div className="mt-8 pt-8 border-t border-slate-700/50">
-                  <h3 className="font-heading text-xl font-semibold text-white mb-4">Technologies Used</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {project.technologies.map((tech, idx) => (
-                      <span key={idx} className="tech-badge">{tech}</span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div className="relative min-h-[300px] md:min-h-full">
-                <img 
-                  src={project.image} 
-                  alt={project.title} 
-                  className="absolute inset-0 w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#080c14] via-transparent to-transparent opacity-80" />
-              </div>
-            </div>
-
-            <div className="p-8 md:p-12 bg-[#0d131f]">
-              <div className="grid md:grid-cols-3 gap-8">
-                
-                <div className="glass-panel p-6 rounded-xl border border-slate-700/50">
-                  <h4 className="font-heading text-lg font-semibold text-cyan-400 mb-4 border-b border-slate-700/50 pb-2">Before Kassel</h4>
-                  <p className="text-sm text-slate-300 leading-relaxed">{project.beforeSpec}</p>
-                </div>
-                
-                <div className="glass-panel p-6 rounded-xl border border-slate-700/50">
-                  <h4 className="font-heading text-lg font-semibold text-green-400 mb-4 border-b border-slate-700/50 pb-2">After Kassel</h4>
-                  <p className="text-sm text-slate-300 leading-relaxed">{project.afterSpec}</p>
-                </div>
-
-                <div className="glass-panel p-6 rounded-xl border border-slate-700/50">
-                  <h4 className="font-heading text-lg font-semibold text-white mb-4 border-b border-slate-700/50 pb-2">Scope of Work</h4>
-                  <ul className="space-y-3">
-                    {project.scopeOfWork && project.scopeOfWork.map((item, idx) => (
-                      <li key={idx} className="flex items-start gap-3 text-sm text-slate-300">
-                        <CheckCircle2 size={16} className="text-cyan-400 mt-0.5 flex-shrink-0" />
-                        <span className="leading-tight">{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-              </div>
-
-              {project.features && project.outcomes && (
-                <div className="grid md:grid-cols-2 gap-8 mt-8">
-                  <div className="glass-panel p-6 rounded-xl border border-slate-700/50">
-                    <h4 className="font-heading text-lg font-semibold text-white mb-4 border-b border-slate-700/50 pb-2">Key Features Engineered</h4>
-                    <ul className="space-y-3">
-                      {project.features.map((item, idx) => (
-                        <li key={idx} className="flex items-start gap-3 text-sm text-slate-300">
-                          <CheckCircle2 size={16} className="text-cyan-400 mt-0.5 flex-shrink-0" />
-                          <span className="leading-tight">{item}</span>
-                        </li>
-                      ))}
-                    </ul>
+                {/* Left side info */}
+                <div className="modal-primary-info">
+                  <div className="modal-header">
+                    <span className="modal-category">{project.category}</span>
+                    <h2 className="modal-title text-cyan">{project.title}</h2>
                   </div>
                   
-                  <div className="glass-panel p-6 rounded-xl border border-slate-700/50">
-                    <h4 className="font-heading text-lg font-semibold text-white mb-4 border-b border-slate-700/50 pb-2">Project Outcomes</h4>
-                    <ul className="space-y-3">
-                      {project.outcomes.map((item, idx) => (
-                        <li key={idx} className="flex items-start gap-3 text-sm text-slate-300">
-                          <CheckCircle2 size={16} className="text-green-400 mt-0.5 flex-shrink-0" />
-                          <span className="leading-tight">{item}</span>
-                        </li>
-                      ))}
-                    </ul>
+                  <div className="modal-metadata">
+                    <div className="meta-item">
+                      <User size={16} className="text-cyan" />
+                      <div>
+                        <span className="meta-label">Client / System Integrator</span>
+                        <span className="meta-val">{project.client}</span>
+                      </div>
+                    </div>
+                    <div className="meta-item">
+                      <Calendar size={16} className="text-cyan" />
+                      <div>
+                        <span className="meta-label">Commissioned Date</span>
+                        <span className="meta-val">{project.date}</span>
+                      </div>
+                    </div>
                   </div>
+
+                  <p className="modal-desc-text">{project.description}</p>
+
+                  <div className="tech-badge-container modal-techs">
+                    <span className="tech-heading-label">Integrated Technologies:</span>
+                    <div className="tech-badges-row">
+                      {project.technologies.map((tech, idx) => (
+                        <span key={idx} className="tech-badge-large">{tech}</span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Before & After retrofits */}
+                  {(project.beforeSpec || project.afterSpec) && (
+                    <div className="retrofit-comparison-box">
+                      <h3 className="modal-section-title">Retrofit Transition Details</h3>
+                      <div className="comparison-cols">
+                        <div className="comparison-card before">
+                          <span className="comparison-badge before">Before Retrofit</span>
+                          <p>{project.beforeSpec}</p>
+                        </div>
+                        <div className="comparison-card after">
+                          <span className="comparison-badge after">After Commissioning</span>
+                          <p>{project.afterSpec}</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              )}
+
+                {/* Right side info (Scope, Features, Outcomes) */}
+                <div className="modal-secondary-info">
+                  <img src={project.image} alt={project.title} className="modal-feature-img" />
+
+                  {project.scopeOfWork && project.scopeOfWork.length > 0 && (
+                    <div className="modal-list-section">
+                      <h3 className="modal-section-title">
+                        <ClipboardList size={16} className="text-cyan" />
+                        <span>Scope of Work</span>
+                      </h3>
+                      <ul className="modal-bullets">
+                        {project.scopeOfWork.map((item, idx) => (
+                          <li key={idx}>
+                            <ChevronRight size={12} className="text-cyan text-align-top-2" />
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {project.features && project.features.length > 0 && (
+                    <div className="modal-list-section">
+                      <h3 className="modal-section-title">
+                        <Cpu size={16} className="text-cyan" />
+                        <span>Core Features Implemented</span>
+                      </h3>
+                      <ul className="modal-bullets">
+                        {project.features.map((item, idx) => (
+                          <li key={idx}>
+                            <CheckCircle2 size={12} className="text-cyan text-align-top-2" />
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {project.outcomes && project.outcomes.length > 0 && (
+                    <div className="modal-list-section">
+                      <h3 className="modal-section-title">
+                        <CheckCircle2 size={16} className="text-amber" />
+                        <span>Project Outcomes</span>
+                      </h3>
+                      <ul className="modal-bullets font-semibold">
+                        {project.outcomes.map((item, idx) => (
+                          <li key={idx}>
+                            <div className="outcome-bullet"></div>
+                            <span className="text-white">{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+
+              </div>
+            </div>
+            
+            <div className="modal-footer" style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '1.5rem', marginTop: '1.5rem' }}>
+              <button onClick={() => navigate('/#contact')} className="btn-primary">Consult on Similar Project</button>
             </div>
           </div>
 
