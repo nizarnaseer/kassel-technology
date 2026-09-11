@@ -13,6 +13,14 @@ export default function ProjectDetail({ projects }) {
     window.scrollTo(0, 0);
   }, [slug]);
 
+  if (projects.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#050810]">
+        <div className="loader"></div>
+      </div>
+    );
+  }
+
   if (!project) {
     return (
       <div className="section-padding container-custom text-center min-h-screen flex flex-col justify-center items-center">

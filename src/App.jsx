@@ -36,7 +36,9 @@ export default function App() {
     // 1. Load LocalStorage fallbacks immediately to ensure instant render with no blank layout
     const localProjects = localStorage.getItem('kassel_projects');
     if (localProjects) {
-      setProjects(JSON.parse(localProjects));
+      const parsed = JSON.parse(localProjects).map(p => p.slug ? p : { ...p, slug: slugify(p.title, { lower: true, strict: true }) });
+      setProjects(parsed);
+      localStorage.setItem('kassel_projects', JSON.stringify(parsed));
     } else {
       localStorage.setItem('kassel_projects', JSON.stringify(initialProjects));
       setProjects(initialProjects);
@@ -77,8 +79,9 @@ export default function App() {
 
         // B. Set up real-time sync listeners
         const unsubProjects = service.subscribeToProjects((projs) => {
-          setProjects(projs);
-          localStorage.setItem('kassel_projects', JSON.stringify(projs));
+          const parsed = projs.map(p => p.slug ? p : { ...p, slug: slugify(p.title, { lower: true, strict: true }) });
+          setProjects(parsed);
+          localStorage.setItem('kassel_projects', JSON.stringify(parsed));
         });
 
         const unsubTeam = service.subscribeToTeam((members) => {
@@ -154,26 +157,6 @@ export default function App() {
     };
   }, []);
 
-  // Scroll Reveal Observer
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('is-visible');
-          }
-        });
-      },
-      { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
-    );
-
-    const revealElements = document.querySelectorAll('.scroll-reveal');
-    revealElements.forEach((el) => observer.observe(el));
-
-    return () => {
-      revealElements.forEach((el) => observer.unobserve(el));
-    };
-  }, [currentView]);
 
   // Synthesize a high-tech notification chime in code to avoid loading mp3 files
   const playNotificationSound = () => {
