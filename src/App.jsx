@@ -5,6 +5,7 @@ import Hero from './components/Hero';
 import About from './components/About';
 import Services from './components/Services';
 import Projects from './components/Projects';
+import FAQ from './components/FAQ';
 import Contact from './components/Contact';
 const Admin = lazy(() => import('./components/Admin'));
 import { initialProjects } from './data/initialProjects';
@@ -456,6 +457,7 @@ export default function App() {
           <div className="scroll-reveal"><About team={team} /></div>
           <div className="scroll-reveal"><Services /></div>
           <div className="scroll-reveal"><Projects projects={projects} /></div>
+          <div className="scroll-reveal"><FAQ /></div>
           <div className="scroll-reveal"><Contact addMessage={addMessage} /></div>
         </main>
       ) : (
