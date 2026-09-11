@@ -405,12 +405,7 @@ export default function App() {
             <div className="cyber-node" style={{ top: '28%', left: '78%', width: '14px', height: '14px', animationDelay: '3.8s' }}></div>
           </div>
 
-          <Header 
-            currentView={currentView} 
-            setCurrentView={setCurrentView}
-            isLoggedIn={isLoggedIn}
-            handleLogout={handleLogout}
-          />
+          <Header />
 
           <main className="main-content-layout">
             <Routes>
