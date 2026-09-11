@@ -30,37 +30,35 @@ export default function FAQ() {
   return (
     <section id="faq" className="section-padding relative">
       <div className="container-custom relative z-10">
-        <div className="text-center mb-16 scroll-reveal">
+        <div className="faq-header scroll-reveal">
           <span className="cyber-badge mb-4">&gt;&gt; Knowledge Base</span>
           <h2 className="section-title">Frequently Asked <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Questions</span></h2>
-          <p className="text-muted max-w-2xl mx-auto mt-4">
+          <p className="faq-subtitle">
             Common inquiries about our industrial automation, PLC, and engineering services.
           </p>
         </div>
 
-        <div className="max-w-4xl mx-auto">
+        <div className="faq-container">
           {faqs.map((faq, index) => {
             const isOpen = openIndex === index;
             return (
               <div 
                 key={index} 
-                className={`glass-card mb-4 overflow-hidden transition-all duration-300 scroll-reveal`}
+                className="glass-card faq-card scroll-reveal"
                 style={{ transitionDelay: `${index * 100}ms` }}
               >
                 <button 
-                  className="w-full px-6 py-5 flex items-center justify-between text-left focus:outline-none"
+                  className="faq-button"
                   onClick={() => toggleFaq(index)}
                 >
-                  <h3 className="font-heading font-semibold text-lg text-slate-200 pr-8">{faq.question}</h3>
+                  <h3>{faq.question}</h3>
                   <ChevronDown 
-                    className={`text-cyan-400 flex-shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} 
+                    className={`faq-chevron ${isOpen ? 'open' : ''}`} 
                     size={24}
                   />
                 </button>
-                <div 
-                  className={`px-6 transition-all duration-300 ease-in-out ${isOpen ? 'max-h-96 pb-5 opacity-100' : 'max-h-0 py-0 opacity-0'}`}
-                >
-                  <p className="text-muted leading-relaxed">
+                <div className={`faq-answer-container ${isOpen ? 'open' : ''}`}>
+                  <p className="faq-answer">
                     {faq.answer}
                   </p>
                 </div>
