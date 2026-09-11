@@ -13,6 +13,14 @@ export default function ProjectDetail({ projects }) {
     window.scrollTo(0, 0);
   }, [slug]);
 
+  const handleContactClick = () => {
+    navigate('/');
+    setTimeout(() => {
+      const el = document.getElementById('contact');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }, 300);
+  };
+
   if (projects.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#050810]">
@@ -66,7 +74,7 @@ export default function ProjectDetail({ projects }) {
       <section className="projects-section" style={{ paddingTop: '8rem', minHeight: '100vh' }}>
         <div className="container-custom">
           
-          <button onClick={() => navigate('/')} className="btn-read-specs" style={{ marginBottom: '2rem', display: 'inline-flex', padding: '0.5rem 1rem', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '20px' }}>
+          <button onClick={() => navigate('/')} className="btn-read-specs" style={{ marginBottom: '2rem', display: 'inline-flex', padding: '0.5rem 1rem', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '20px', color: '#e2e8f0', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
             <ChevronLeft size={16} style={{ marginRight: '8px' }} />
             <span>Back to Projects</span>
           </button>
@@ -187,8 +195,8 @@ export default function ProjectDetail({ projects }) {
               </div>
             </div>
             
-            <div className="modal-footer" style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '1.5rem', marginTop: '1.5rem' }}>
-              <button onClick={() => navigate('/#contact')} className="btn-primary">Consult on Similar Project</button>
+            <div className="modal-footer" style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '1.5rem', marginTop: '1.5rem', textAlign: 'center' }}>
+              <button onClick={handleContactClick} className="btn-primary">Consult on Similar Project</button>
             </div>
           </div>
 
