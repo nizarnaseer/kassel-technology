@@ -178,9 +178,18 @@ export default function Admin({
     } else {
       onAddTeamMember(finalMember);
     }
-
+    
+    // Close form and clear draft
     setTeamFormOpen(false);
     localStorage.removeItem('kassel_team_draft');
+    
+    // Reset form state
+    setProjectTeamForm({
+      name: '',
+      role: '',
+      bio: '',
+      level: 3
+    });
   };
 
   const onSubmitLogin = (e) => {
