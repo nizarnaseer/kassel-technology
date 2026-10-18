@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { Calendar, ChevronRight, AlertCircle } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 export default function Projects({ projects }) {
   const [filter, setFilter] = useState('All');
-  const navigate = useNavigate();
 
   const categories = ['All', 'PLC & HMI Retrofit', 'Industrial Machinery', 'SCADA & Data Systems', 'Embedded & Gateways'];
 
@@ -65,13 +64,13 @@ export default function Projects({ projects }) {
                 )}
               </div>
 
-              <button 
-                onClick={() => navigate(`/projects/${p.slug}`)} 
+              <Link 
+                to={`/projects/${p.slug}`} 
                 className="btn-read-specs"
               >
                 <span>Technical Specifications</span>
                 <ChevronRight size={14} />
-              </button>
+              </Link>
             </div>
           </div>
         ))}
@@ -245,6 +244,7 @@ export default function Projects({ projects }) {
           cursor: pointer;
           padding: 0.5rem 0;
           width: fit-content;
+          text-decoration: none;
           transition: var(--transition-smooth);
         }
 
