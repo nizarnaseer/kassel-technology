@@ -47,7 +47,7 @@ export default function About({ team = [] }) {
         <span className="section-subtitle">Who We Are</span>
         <h2 className="section-title">About Kassel Technology</h2>
         <p className="section-description">
-          A rising leader for Industrial Automation Services in the Malaysia market. 
+          A rising leader among industrial automation companies in Malaysia and premier PLC, robotics & SCADA system integrators. 
           Providing nationwide engineering and on-site support across Peninsular Malaysia, Sabah, and Sarawak.
         </p>
       </div>

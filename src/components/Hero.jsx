@@ -174,8 +174,8 @@ export default function Hero({ setCurrentView: _setCurrentView }) {
           </h1>
           
           <p className="hero-description">
-            Kassel Technology delivers state-of-the-art integrated automation and control solutions. 
-            We specialize in high-efficiency PLC, HMI, and SCADA programming, custom control panels, 
+            Recognized among the best industrial automation companies in Malaysia, Kassel Technology delivers state-of-the-art integrated automation and control solutions. 
+            As trusted PLC, robotics, and SCADA system integrators, we specialize in high-efficiency PLC & HMI programming, custom control panels, 
             and 24/7 breakdown troubleshooting.
           </p>
 
