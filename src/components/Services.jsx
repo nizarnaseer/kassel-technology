@@ -236,8 +236,8 @@ export default function Services() {
             <p className="region-list">Bayan Lepas, Butterworth, Perai, Kulim High-Tech Park, Alor Setar, Sungai Petani, Ipoh, Taiping, Kamunting, Kangar.</p>
           </div>
           <div className="coverage-region">
-            <h3 className="region-name text-cyan">Southern Region (Johor, Melaka, Negeri Sembilan)</h3>
-            <p className="region-list">Pasir Gudang, Johor Bahru, Senai, Tampoi, Batu Pahat, Muar, Melaka Town, Cheng Industrial Area, Seremban, Senawang.</p>
+            <h3 className="region-name text-cyan">Southern Region (Negeri Sembilan, Melaka, Johor)</h3>
+            <p className="region-list">Seremban, Nilai, Sendayan TechValley, Senawang, Melaka Town, Cheng Industrial Area, Pasir Gudang, Johor Bahru, Senai, Tampoi, Batu Pahat, Muar.</p>
           </div>
           <div className="coverage-region">
             <h3 className="region-name text-cyan">East Coast Region (Pahang, Terengganu, Kelantan)</h3>
