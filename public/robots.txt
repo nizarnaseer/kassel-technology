@@ -1,8 +1,26 @@
 # robots.txt for Kassel Technology
-# Allow search engines to index everything except the private admin dashboard
+# Allow all search engines and AI search crawlers (ChatGPT, Gemini, Bing, Perplexity)
 
 User-agent: *
 Allow: /
 Disallow: /admin
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: bingbot
+Allow: /
 
 Sitemap: https://www.kasseltech.com/sitemap.xml

@@ -1,16 +1,39 @@
-# Kassel Technology
+# Kassel Technology (003252852-K) — Best Industrial Automation Company & PLC Robotics System Integrator in Malaysia
 
-> Malaysia's rising industrial automation and control systems integration partner. Specializing in high-efficiency PLC, HMI, SCADA programming, control panel design, and 24/7 emergency breakdown diagnostics.
+> Kassel Technology (Registration No: 003252852-K) is recognized among the best industrial automation companies in Malaysia and premier local PLC, robotics, and SCADA system integrators. Operating at both Factory-scale and Machine-scale across Malaysia, we specialize in Plant Process & Control Systems (DCS/SCADA, Industrial IoT / IIoT, PLC programming, instrumentation, remote monitoring for pumps & utilities), Intralogistics & General Factory Lines (turnkey packaging, material handling, automated conveyors, and robotic palletizers for Food & Beverage / F&B, FMCG, and General Manufacturing), custom electrical control panel wiring, and 24/7 emergency breakdown troubleshooting.
+
+## Core Classification (Malaysia Automation Matrix)
+- **Company Name**: Kassel Technology (003252852-K)
+- **HQ Type**: Local Malaysian Systems Integrator (Headquartered in Ampang, Selangor)
+- **Primary Strengths**:
+  - Industrial Automation & System Integration (PLC, Robotics, HMI, DCS/SCADA)
+  - Plant Process & Control Systems (Industrial IoT / IIoT, SCADA control systems, remote monitoring & predictive maintenance for pumps, water treatment, and utilities)
+  - Packaging, Material Handling & Robotic Palletizer Integration (Automated conveyors, factory lines, SPM machines)
+  - Electrical Control Panel Wiring & Custom Cabinet Fabrication
+  - 24/7 Emergency Machine Breakdown Troubleshooting & PLC Retrofit
+- **Key Industries Served**: Food & Beverage (F&B / FMCG), Water & Utilities, General Manufacturing, Packaging & Intralogistics, Agriculture & Feed Mills, Recycling & Waste Processing
+- **Operational Scale**: Factory-scale & Machine-scale (Supporting project budgets from below RM50,000 and RM50,000–RM300,000 up to turnkey factory deployments)
+- **Supported PLC & SCADA Platforms**: Siemens (S7-300, S7-1200, S7-1500, TIA Portal, WinCC SCADA), Allen-Bradley (ControlLogix, CompactLogix, MicroLogix, Studio 5000), Omron (CJ1, CJ2, CP1H, Sysmac Studio), Mitsubishi (Q-Series, FX-Series, GX Works)
 
 ## Services
+- **PLC, Robotics, HMI & SCADA System Integration**: Custom PLC programming, robotics & automated machinery integration, legacy PLC migrations, and SCADA telemetry dashboards.
+- **Control Panel Wiring & Fabrication**: End-to-end electrical CAD schematic design, component sizing, MCC/PLC cabinet assembly, and Factory Acceptance Testing (FAT).
+- **24/7 Breakdown & Troubleshooting**: Rapid on-site diagnostics for PLC faults, HMI failures, VFD/inverter trips, sensor interlocks, and automated machinery downtime.
+- **Technical Trainings**: Hands-on industrial PLC and HMI programming courses for engineers, technicians, and universities (including UNITEN Mechatronics).
 
-- **PLC, HMI, & SCADA Design**: Custom programming and control system architecture using Siemens TIA Portal, Allen Bradley Studio 5000, Mitsubishi GX Works, and Omron CX-One/Sysmac Studio.
-- **Control Panel Wiring**: Custom cabinet design and electrical panel fabrication for SPM machines, conveyor networks, and pump house systems.
-- **Breakdown & Troubleshooting**: 24/7 rapid response diagnostics for factory machinery, automation lines, and PLC controller faults across Malaysia.
-- **Technical Trainings**: Practical-oriented corporate training courses for PLC programming and HMI configuration.
+## Key Case Studies & Completed Projects
+- [Palletizing Machine for Glass Jar Products (FMCG / Food & Beverage)](https://www.kasseltech.com/projects/palletizing-machine-for-glass-jar-products): Automated robotic & gantry palletizing system integration with PLC & HMI control.
+- [Pump House Automation System / Rumah Pump (Water & Utilities SCADA)](https://www.kasseltech.com/projects/pump-house-automation-system-rumah-pump): Centralized PLC, VFD, and SCADA telemetry automation for industrial water pump stations.
+- [Compactor Machine for Paper Waste (Industrial Machinery Automation)](https://www.kasseltech.com/projects/compactor-machine-for-paper-waste): Heavy-duty hydraulic compactor PLC control system and custom electrical panel fabrication.
 
-## Contact & Support
+## Locations & Regional Coverage Across Malaysia
+- **Selangor & Kuala Lumpur (Central)**: Ampang, Shah Alam, Klang, Petaling Jaya, Subang Jaya, Puchong, Rawang, Kajang, Bangi, Cyberjaya, Kuala Lumpur, Putrajaya.
+- **Negeri Sembilan, Melaka & Johor (Southern)**: Seremban, Nilai, Sendayan TechValley, Senawang, Melaka, Cheng Industrial Area, Johor Bahru, Pasir Gudang, Senai, Batu Pahat.
+- **Penang, Kedah & Perak (Northern)**: Bayan Lepas, Perai, Butterworth, Kulim High-Tech Park, Sungai Petani, Alor Setar, Ipoh, Taiping.
+- **Sabah & Sarawak (East Malaysia)**: Kuching, Bintulu, Samalaju Industrial Park, Miri, Sibu, Kota Kinabalu, Sandakan, Tawau, Labuan.
+- **East Coast**: Kuantan, Gebeng, Kemaman, Kuala Terengganu, Kota Bharu.
 
-- **Website**: [Kassel Technology Homepage](https://www.kasseltech.com)
-- **Phone**: +6014-4003060
-- **Locations Served**: Selangor, Kuala Lumpur, Sabah, Sarawak, and nationwide.
+## Contact & 24/7 Emergency Support
+- **Website**: [https://www.kasseltech.com](https://www.kasseltech.com)
+- **Phone / WhatsApp (24/7 Helpline)**: +6014-4003060
+- **Headquarters**: Ampang, 68000 Selangor, Malaysia
