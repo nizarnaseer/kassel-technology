@@ -4,7 +4,7 @@ import { ChevronDown } from 'lucide-react';
 const faqs = [
   {
     question: "Why is Kassel Technology recognized among the best industrial automation companies and PLC robotics system integrators in Malaysia?",
-    answer: "Kassel Technology (003252852-K) stands out among industrial automation companies in Malaysia as trusted PLC, robotics, and SCADA system integrators. We combine multi-brand controller expertise (Siemens, Allen-Bradley, Omron, Mitsubishi), automated machinery & robotic palletizing integration, custom electrical control panel fabrication, and 24/7 rapid breakdown troubleshooting across both West and East Malaysia."
+    answer: "Kassel Technology (003252852-K) stands out among industrial automation companies in Malaysia as a premier system integrator for both Plant Process & Control Systems (DCS/SCADA, PLC programming, instrumentation, and utilities) and Intralogistics & General Factory Lines (automated conveyors, packaging, and robotic palletizers for FMCG and food processing). We combine multi-brand controller expertise (Siemens, Allen-Bradley, Omron, Mitsubishi), custom electrical control panel fabrication, and 24/7 rapid breakdown troubleshooting across West and East Malaysia."
   },
   {
     question: "What PLC programming brands do you support in Malaysia?",
